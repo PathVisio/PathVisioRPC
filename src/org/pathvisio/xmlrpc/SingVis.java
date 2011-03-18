@@ -51,10 +51,10 @@ public class SingVis implements XmlRpcHandlerMapping {
 
 		// Creating new colorset 
 		ColorSet cs = new ColorSet(colsetmgr);
-		ColorGradient cg = new ColorGradient(cs);//Creating and setting gradient
+		ColorGradient cg = new ColorGradient();//Creating and setting gradient
 		cg.addColorValuePair(new ColorValuePair(Color.red,2));
 		cg.addColorValuePair(new ColorValuePair(Color.yellow,-2));
-		ColorRule cr = new ColorRule(cs); //Creating and setting colorrule
+		ColorRule cr = new ColorRule(); //Creating and setting colorrule
 		cr.setColor(Color.green);
 		List<String> al;
 		al = gex.getCurrentGex().getSampleNames();
@@ -64,8 +64,7 @@ public class SingVis implements XmlRpcHandlerMapping {
 		
 		//TODO: check if these are both necessary?
 		DataNodeLabel dnl = new DataNodeLabel();
-		cs.addObject(cg);
-		cs.addObject(cr);
+		cs.addRule(cr);
 		cs.setGradient(cg);
 		
 		colsetmgr.addColorSet(cs);//Creating coloursetmanager object and adding colourset to it

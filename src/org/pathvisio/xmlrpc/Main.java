@@ -10,6 +10,7 @@ import org.pathvisio.model.ImageExporter;
 import org.pathvisio.model.MappFormat;
 import org.pathvisio.model.RasterImageExporter;
 import org.pathvisio.preferences.PreferenceManager;
+import org.pathvisio.visualization.plugins.VisualizationPlugin;
 
 public class Main
 {

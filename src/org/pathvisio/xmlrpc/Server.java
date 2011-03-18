@@ -31,8 +31,9 @@ public class Server
 		PathwayFunctions.setEngine(engine);
 		phm.addHandler("Pathways", PathwayFunctions.class);
 		phm.addHandler("VisualHandler", SingVis.class);
-		 phm.addHandler("PgexHandler",Pathcon.class);
-		 phm.addHandler("ZscoreHandler", calculateZscore.class);
+		phm.addHandler("PgexHandler",Pathcon.class);
+		phm.addHandler("ZscoreHandler", calculateZscore.class);
+		phm.addHandler("xportHandler", exporter.class);
 		xmlserver.setHandlerMapping(phm);
 		server.start();
 		Logger.log.info("Started successfully.");

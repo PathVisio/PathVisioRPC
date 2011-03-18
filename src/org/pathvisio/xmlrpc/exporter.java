@@ -17,19 +17,55 @@ import org.pathvisio.plugins.HtmlExporter;
 import org.pathvisio.preferences.PreferenceManager;
 import org.pathvisio.visualization.Visualization;
 import org.pathvisio.visualization.VisualizationManager;
+import org.pathvisio.visualization.VisualizationMethod;
+import org.pathvisio.visualization.VisualizationMethodProvider;
+import org.pathvisio.visualization.VisualizationMethodRegistry;
+import org.pathvisio.visualization.plugins.ColorByExpression;
+import org.pathvisio.visualization.plugins.DataNodeLabel;
+import org.pathvisio.visualization.plugins.TextByExpression;
 
 
 public class exporter {
 	@SuppressWarnings("static-access")
 public String exportInfo() throws ClassNotFoundException, IDMapperException, ConverterException, IOException{
 	PreferenceManager.init();
+	
 	Class.forName("org.bridgedb.rdb.IDMapperRdb");
 	IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + "/home/rai/Desktop/maastricht/result_server/Hs_Derby_20090720.bridge");
 	Engine engine = new Engine ();
-	GexManager gexMgr = new GexManager();
+	final GexManager gexMgr = new GexManager();
+	final VisualizationManager visMgr = new VisualizationManager(engine, gexMgr);
+	VisualizationMethodRegistry reg = visMgr.getVisualizationMethodRegistry();
+	
+	reg.registerMethod(
+			ColorByExpression.class.toString(),
+			new VisualizationMethodProvider() {
+				public VisualizationMethod create() {
+					return new ColorByExpression(gexMgr, 
+							visMgr.getColorSetManager());
+				}
+		}
+	);
+	reg.registerMethod(
+			TextByExpression.class.toString(),
+			new VisualizationMethodProvider() {
+				public VisualizationMethod create() {
+					return new TextByExpression(gexMgr);
+				}
+		}
+	);
+	reg.registerMethod(
+			DataNodeLabel.class.toString(),
+			new VisualizationMethodProvider() {
+				public VisualizationMethod create() {
+					return new DataNodeLabel();
+				}
+		}
+	);
+
 	gexMgr.setCurrentGex("/home/rai/Desktop/maastricht/result_server/feb_21.txt.pgex",false);
 	gexMgr.getCachedData().setMapper(gdb);
-	VisualizationManager visMgr = new VisualizationManager(engine, gexMgr);
+
 	HtmlExporter htmlexpo = new HtmlExporter(gdb, visMgr, gexMgr);
 	List<File> pwFiles = new ArrayList<File>() ;
 	pwFiles.add(new File("/home/rai/Desktop/maastricht/result_server/pathways/WP143_39785.gpml"));
