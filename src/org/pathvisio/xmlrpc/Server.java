@@ -29,7 +29,10 @@ public class Server
 		XmlRpcServer xmlserver = server.getXmlRpcServer();
 		PropertyHandlerMapping phm = new PropertyHandlerMapping();
 		PathwayFunctions.setEngine(engine);
-		phm.addHandler("PathVisio", PathwayFunctions.class);
+		phm.addHandler("Pathways", PathwayFunctions.class);
+		phm.addHandler("VisualHandler", SingVis.class);
+		 phm.addHandler("PgexHandler",Pathcon.class);
+		 phm.addHandler("ZscoreHandler", calculateZscore.class);
 		xmlserver.setHandlerMapping(phm);
 		server.start();
 		Logger.log.info("Started successfully.");
@@ -41,5 +44,5 @@ public class Server
 		server.shutdown();
 	}
 
-	public int getDefaultPort() { return 8081; }
+	public int getDefaultPort() { return 8080; }
 }
