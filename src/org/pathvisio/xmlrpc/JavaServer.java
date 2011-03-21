@@ -17,11 +17,14 @@ public class JavaServer implements XmlRpcHandlerMapping {
  public int sum(int a,int b){
 	 return(a+b);
  }
- public String showMessage(String message) {
+ public String showMessage(String message, String name) {
 	 String mesg = "No communication";
+	 String msg = "R says hello server says hi";
 	 if(message.equals("hello")){
-		 String msg = "R says hello server says hi";
 		 mesg = msg ;
+	 }
+	 if(name.equals("rai")){
+		 mesg = msg + " rai";
 	 }
      return mesg;
  }
@@ -35,7 +38,7 @@ public class JavaServer implements XmlRpcHandlerMapping {
      phm.addHandler("Server", JavaServer.class);
      phm.addHandler("Pathways", PathwayFunctions.class);
      phm.addHandler("VisualHandler", SingVis.class);
-	 phm.addHandler("PgexHandler",Pathcon.class);
+	 phm.addHandler("PgexHandler",makePgex.class);
 	 phm.addHandler("ZscoreHandler", calculateZscore.class);
 	 phm.addHandler("xportHandler", exporter.class);
      xmlserver.setHandlerMapping(phm);

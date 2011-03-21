@@ -10,7 +10,6 @@ import org.pathvisio.model.ImageExporter;
 import org.pathvisio.model.MappFormat;
 import org.pathvisio.model.RasterImageExporter;
 import org.pathvisio.preferences.PreferenceManager;
-import org.pathvisio.visualization.plugins.VisualizationPlugin;
 
 public class Main
 {
@@ -23,7 +22,6 @@ public class Main
 		engine.addPathwayExporter(new BatikImageExporter(ImageExporter.TYPE_PDF));
 		engine.addPathwayExporter(new BatikImageExporter(ImageExporter.TYPE_SVG));
 		engine.addPathwayExporter(new RasterImageExporter(ImageExporter.TYPE_PNG));
-		
 		Server server = new Server(engine);
 		server.init(server.getDefaultPort());
 	}
