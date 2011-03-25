@@ -11,28 +11,24 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 import org.bridgedb.BridgeDb;
 import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
-//import org.bridgedb.Xref;
-//import org.bridgedb.bio.BioDataSource;
-import org.pathvisio.gex.CachedData;
 import org.pathvisio.gex.GexManager;
 import org.pathvisio.plugins.statistics.StatisticsResult;
 import org.pathvisio.plugins.statistics.ZScoreCalculator;
 import org.pathvisio.preferences.PreferenceManager;
+import org.pathvisio.util.ProgressKeeper;
 import org.pathvisio.visualization.colorset.Criterion;
 
 public class calculateZscore implements XmlRpcHandlerMapping {
 	
-	public String calcZscore (String pathDir, String gexFile, String dbFile, String exprZ) throws IDMapperException, ClassNotFoundException, IOException{
+	public String calcZscore (String gexFile, String dbFile, String pathDir, String exprZ) throws IDMapperException, ClassNotFoundException, IOException{
 		PreferenceManager.init();
 		File pwDir = new File(pathDir);
 		GexManager gex = new GexManager();
 		gex.setCurrentGex(gexFile,false);
-		CachedData cd = gex.getCachedData();
-		
+			
 		Class.forName("org.bridgedb.rdb.IDMapperRdb");
 		IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
-		cd.setMapper(gdb);
-		
+		gex.getCachedData().setMapper(gdb);
 		Criterion crit = new Criterion();
 		List<String> al;
 		al = gex.getCurrentGex().getSampleNames();
@@ -40,9 +36,10 @@ public class calculateZscore implements XmlRpcHandlerMapping {
 		String error = crit.setExpression(exprZ,al);
 		
 		if (error != null) throw new IllegalStateException(error);
-		
-		ZScoreCalculator zsc = new ZScoreCalculator(crit, pwDir, cd, gdb, null);
-		StatisticsResult statresalt = zsc.calculateMappFinder();
+		ProgressKeeper pk = new ProgressKeeper();
+		ZScoreCalculator zsc = new ZScoreCalculator(crit, pwDir, gex.getCachedData(), gdb, pk);
+		StatisticsResult statresalt = zsc.calculateAlternative();
+		System.out.println(statresalt.getCriterion().toString());
 		statresalt.save(new File(pathDir + "Zscore_results_new.txt"));
 		return ("It works check Zscore_results file in result_server folder!!");
 		}

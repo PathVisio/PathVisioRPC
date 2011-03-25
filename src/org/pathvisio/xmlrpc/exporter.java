@@ -25,10 +25,11 @@ import org.pathvisio.visualization.plugins.TextByExpression;
 
 public class exporter {
 	@SuppressWarnings("static-access")
-public String exportInfo(String dbFile, String gexFile, String pathDir, String outputDir) throws ClassNotFoundException, IDMapperException, ConverterException, IOException{
+public String exportInfo(String gexFileName, String dbFileName, String pathDirName, String outputDirName) throws ClassNotFoundException, IDMapperException, ConverterException, IOException{
 	PreferenceManager.init();
 	
 	Class.forName("org.bridgedb.rdb.IDMapperRdb");
+	String dbFile = dbFileName;
 	IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
 	Engine engine = new Engine ();
 	final GexManager gexMgr = new GexManager();
@@ -60,11 +61,12 @@ public String exportInfo(String dbFile, String gexFile, String pathDir, String o
 				}
 		}
 	);
-
+	String gexFile = gexFileName;
 	gexMgr.setCurrentGex(gexFile,false);
 	gexMgr.getCachedData().setMapper(gdb);
 
 	HtmlExporter htmlexpo = new HtmlExporter(gdb, visMgr, gexMgr);
+	String pathDir = pathDirName;
 	File pathwayDir = new File(pathDir);
 	String[] pathways = pathwayDir.list();
 	List<File> pwFiles = new ArrayList<File>();
@@ -72,6 +74,7 @@ public String exportInfo(String dbFile, String gexFile, String pathDir, String o
 	{
 		pwFiles.add	(new File(pathDir+"/"+pathways[i]));
 		}
+	String outputDir = outputDirName;
 	File htmlPath = new File(outputDir);
 	htmlexpo.exportAll(pwFiles, htmlPath, gdb, visMgr, gexMgr);
 	return "It works check results in exporter results";

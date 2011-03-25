@@ -11,23 +11,7 @@ public class JavaServer implements XmlRpcHandlerMapping {
 	public String message(){
 		return "It works!";
 	}
- public int square(int x) {
-    return (x*x);
- }
- public int sum(int a,int b){
-	 return(a+b);
- }
- public String showMessage(String message, String name) {
-	 String mesg = "No communication";
-	 String msg = "R says hello server says hi";
-	 if(message.equals("hello")){
-		 mesg = msg ;
-	 }
-	 if(name.equals("rai")){
-		 mesg = msg + " rai";
-	 }
-     return mesg;
- }
+
 
  public static void main (String [] args) {
   try {
@@ -36,12 +20,17 @@ public class JavaServer implements XmlRpcHandlerMapping {
      XmlRpcServer xmlserver = server.getXmlRpcServer();
      PropertyHandlerMapping phm = new PropertyHandlerMapping();
      phm.addHandler("Server", JavaServer.class);
-     phm.addHandler("Pathways", PathwayFunctions.class);
-     phm.addHandler("VisualHandler", SingVis.class);
-	 phm.addHandler("PgexHandler",makePgex.class);
-	 phm.addHandler("ZscoreHandler", calculateZscore.class);
+     phm.addHandler("PgexHandler",makePgex.class);
+     phm.addHandler("SingVisHandler", SingVis.class);
+     phm.addHandler("MultVisHandler", MultiVis.class);
+     phm.addHandler("RvisHandler", MultRvis.class);
+     phm.addHandler("GvisHandler", MultGvis.class);
+     phm.addHandler("ZscoreHandler", calculateZscore.class);
 	 phm.addHandler("xportHandler", exporter.class);
-     xmlserver.setHandlerMapping(phm);
+	 phm.addHandler("statHandler", StatExporter.class);
+	 phm.addHandler("sh", calculateZsc.class);
+	 
+	 xmlserver.setHandlerMapping(phm);
      server.start();
      System.out.println("Started successfully.");
      System.out.println("Accepting requests. (Halt program to stop.)");
