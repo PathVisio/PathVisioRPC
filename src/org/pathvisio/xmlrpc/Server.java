@@ -30,9 +30,9 @@ public class Server
 		PropertyHandlerMapping phm = new PropertyHandlerMapping();
 		PathwayFunctions.setEngine(engine);
 		phm.addHandler("Pathways", PathwayFunctions.class);
-		phm.addHandler("VisualHandler", SingVis.class);
+		phm.addHandler("VisualHandler", VisXml.class);
 		phm.addHandler("PgexHandler",makePgex.class);
-		phm.addHandler("ZscoreHandler", calculateZscore.class);
+		phm.addHandler("ZscoreHandler", statExport.class);
 		phm.addHandler("xportHandler", exporter.class);
 		xmlserver.setHandlerMapping(phm);
 		server.start();
@@ -45,5 +45,5 @@ public class Server
 		server.shutdown();
 	}
 
-	public int getDefaultPort() { return 8080; }
+	public int getDefaultPort() { return 2501; }
 }

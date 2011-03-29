@@ -19,17 +19,10 @@ public class JavaServer implements XmlRpcHandlerMapping {
      WebServer server = new WebServer(2501);
      XmlRpcServer xmlserver = server.getXmlRpcServer();
      PropertyHandlerMapping phm = new PropertyHandlerMapping();
-     phm.addHandler("Server", JavaServer.class);
      phm.addHandler("PgexHandler",makePgex.class);
-     phm.addHandler("SingVisHandler", SingVis.class);
-     phm.addHandler("MultVisHandler", MultiVis.class);
-     phm.addHandler("RvisHandler", MultRvis.class);
-     phm.addHandler("GvisHandler", MultGvis.class);
-     phm.addHandler("ZscoreHandler", calculateZscore.class);
-	 phm.addHandler("xportHandler", exporter.class);
-	 phm.addHandler("statHandler", StatExporter.class);
-	 phm.addHandler("sh", calculateZsc.class);
-	 
+     phm.addHandler("VisualHandler", VisXml.class);
+     phm.addHandler("xportHandler", statExport.class);
+	 	
 	 xmlserver.setHandlerMapping(phm);
      server.start();
      System.out.println("Started successfully.");
