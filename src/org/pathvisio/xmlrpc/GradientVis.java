@@ -3,9 +3,9 @@ import java.awt.Color;
 import java.io.IOException;
 
 import org.bridgedb.IDMapperException;
-import org.pathvisio.visualization.colorset.ColorGradient;
-import org.pathvisio.visualization.colorset.ColorGradient.ColorValuePair;
-import org.pathvisio.visualization.colorset.ColorSet;
+import org.pathvisio.desktop.visualization.ColorGradient;
+import org.pathvisio.desktop.visualization.ColorGradient.ColorValuePair;
+import org.pathvisio.desktop.visualization.ColorSet;
 
 
 public class GradientVis {

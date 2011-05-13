@@ -10,22 +10,22 @@ import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
 import org.bridgedb.bio.BioDataSource;
 import org.bridgedb.rdb.construct.DataDerby;
-import org.pathvisio.Engine;
-import org.pathvisio.debug.Logger;
-import org.pathvisio.gex.GexManager;
-import org.pathvisio.gex.SimpleGex;
-import org.pathvisio.gui.swing.PvDesktop;
-import org.pathvisio.gui.swing.SwingEngine;
-import org.pathvisio.model.ConverterException;
-import org.pathvisio.plugin.PluginManager;
+import org.pathvisio.core.Engine;
+import org.pathvisio.core.debug.Logger;
+import org.pathvisio.desktop.gex.GexManager;
+import org.pathvisio.desktop.gex.SimpleGex;
+import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.gui.SwingEngine;
 import org.pathvisio.plugins.statistics.StatisticsExporter;
-import org.pathvisio.plugins.statistics.StatisticsResult;
-import org.pathvisio.plugins.statistics.ZScoreCalculator;
-import org.pathvisio.preferences.PreferenceManager;
-import org.pathvisio.util.FileUtils;
-import org.pathvisio.visualization.Visualization;
-import org.pathvisio.visualization.VisualizationManager;
-import org.pathvisio.visualization.colorset.Criterion;
+import org.pathvisio.statistics.StatisticsResult;
+import org.pathvisio.statistics.ZScoreCalculator;
+import org.pathvisio.core.model.ConverterException;
+import org.pathvisio.desktop.plugin.PluginManager;
+import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.core.util.FileUtils;
+import org.pathvisio.desktop.visualization.Visualization;
+import org.pathvisio.desktop.visualization.VisualizationManager;
+import org.pathvisio.desktop.visualization.Criterion;
 
 public class statExport {
 	public String xportInfo (String gexFile, String dbFile, String pathDir, String exprZ, String output) throws IDMapperException, ClassNotFoundException, IOException, InstantiationException, IllegalAccessException, ConverterException{

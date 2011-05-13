@@ -4,12 +4,12 @@ import java.io.File;
 
 import javax.jws.WebMethod;
 
-import org.pathvisio.Engine;
-import org.pathvisio.model.ConverterException;
-import org.pathvisio.model.ObjectType;
-import org.pathvisio.model.Pathway;
-import org.pathvisio.model.PathwayElement;
-import org.pathvisio.model.StaticProperty;
+import org.pathvisio.core.Engine;
+import org.pathvisio.core.model.ConverterException;
+import org.pathvisio.core.model.ObjectType;
+import org.pathvisio.core.model.Pathway;
+import org.pathvisio.core.model.PathwayElement;
+import org.pathvisio.core.model.StaticProperty;
 
 public class PathwayFunctions
 {

@@ -8,10 +8,10 @@ import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
 import org.bridgedb.bio.BioDataSource;
 import java.io.*;
-import org.pathvisio.gex.GexManager;
-import org.pathvisio.plugins.gex.GexTxtImporter;
-import org.pathvisio.plugins.gex.ImportInformation;
-import org.pathvisio.preferences.PreferenceManager;
+import org.pathvisio.desktop.gex.GexManager;
+import org.pathvisio.gexplugin.GexTxtImporter;
+import org.pathvisio.gexplugin.ImportInformation;
+import org.pathvisio.core.preferences.PreferenceManager;
 
 public class Pathcon implements XmlRpcHandlerMapping { 
 	public String pgex(String filename) throws IOException, IDMapperException, ClassNotFoundException {

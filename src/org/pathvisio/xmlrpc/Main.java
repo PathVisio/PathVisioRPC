@@ -3,13 +3,13 @@ package org.pathvisio.xmlrpc;
 import java.io.IOException;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.pathvisio.Engine;
-import org.pathvisio.model.BatikImageExporter;
-import org.pathvisio.model.GpmlFormat;
-import org.pathvisio.model.ImageExporter;
-import org.pathvisio.model.MappFormat;
-import org.pathvisio.model.RasterImageExporter;
-import org.pathvisio.preferences.PreferenceManager;
+import org.pathvisio.core.Engine;
+import org.pathvisio.core.model.BatikImageExporter;
+import org.pathvisio.core.model.GpmlFormat;
+import org.pathvisio.core.model.ImageExporter;
+import org.pathvisio.core.model.MappFormat;
+import org.pathvisio.core.model.RasterImageExporter;
+import org.pathvisio.core.preferences.PreferenceManager;
 
 public class Main
 {

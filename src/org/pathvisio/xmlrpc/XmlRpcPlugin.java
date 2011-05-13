@@ -1,7 +1,7 @@
 package org.pathvisio.xmlrpc;
 
-import org.pathvisio.gui.swing.PvDesktop;
-import org.pathvisio.plugin.Plugin;
+import org.pathvisio.desktop.PvDesktop;
+import org.pathvisio.desktop.plugin.Plugin;
 
 public class XmlRpcPlugin implements Plugin
 {

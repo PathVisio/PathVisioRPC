@@ -11,12 +11,12 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 import org.bridgedb.BridgeDb;
 import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
-import org.pathvisio.gex.GexManager;
-import org.pathvisio.plugins.statistics.StatisticsResult;
-import org.pathvisio.plugins.statistics.ZScoreCalculator;
-import org.pathvisio.preferences.PreferenceManager;
-import org.pathvisio.util.ProgressKeeper;
-import org.pathvisio.visualization.colorset.Criterion;
+import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.core.util.ProgressKeeper;
+import org.pathvisio.desktop.gex.GexManager;
+import org.pathvisio.desktop.visualization.Criterion;
+import org.pathvisio.statistics.StatisticsResult;
+import org.pathvisio.statistics.ZScoreCalculator;
 
 public class calculateZscore implements XmlRpcHandlerMapping {
 	

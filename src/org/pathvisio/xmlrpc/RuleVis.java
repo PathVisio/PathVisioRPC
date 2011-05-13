@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.bridgedb.IDMapperException;
-import org.pathvisio.gex.GexManager;
-import org.pathvisio.preferences.PreferenceManager;
-import org.pathvisio.visualization.colorset.ColorRule;
-import org.pathvisio.visualization.colorset.ColorSet;
+import org.pathvisio.desktop.gex.GexManager;
+import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.desktop.visualization.ColorRule;
+import org.pathvisio.desktop.visualization.ColorSet;
 
 
 public class RuleVis {
