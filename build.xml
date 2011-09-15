@@ -6,7 +6,7 @@
 
 	<property name="base.name" value="org.pathvisio.pvconnector" />
 	<property name="jar.name" value="${base.name}.jar" />
-	<property name="pathvisio.dir" value="/home/tina/bigcat/pathvisio/workspace/pathvisio/trunk/" />
+	<property name="pathvisio.dir" value="../../pathvisio" />
 
 	<property environment="env" />
 	<property name="install.dir" value="${env.HOME}/.PathVisio/plugins/" />
