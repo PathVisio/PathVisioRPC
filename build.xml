@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<project name="PvConnector" basedir=".">
+	<!-- always be java 1.5 compatible -->
+	<property name="ant.build.javac.target" value="1.5"/>
+	<property name="ant.build.javac.source" value="1.5"/>
+
+	<property name="base.name" value="org.pathvisio.pvconnector" />
+	<property name="jar.name" value="${base.name}.jar" />
+	<property name="pathvisio.dir" value="/home/tina/bigcat/pathvisio/workspace/pathvisio/trunk/" />
+
+	<property environment="env" />
+	<property name="install.dir" value="${env.HOME}/.PathVisio/plugins/" />
+
+	<property name="standalone.dir" value="standalone" />
+
+	<path id="project.class.path">
+		<fileset dir="${standalone.dir}/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="prepare">
+		<mkdir dir="build" />
+		<fail message="Can't find ${pathvisio.dir}/modules/org.pathvisio.core.jar, please specify the path to pathvisio with -Dpathvisio.dir=....">
+			<condition>
+				<not>
+					<available file="${pathvisio.dir}/modules/org.pathvisio.core.jar" />
+				</not>
+			</condition>
+		</fail>
+		<mkdir dir="${standalone.dir}" />
+		<copy toDir="${standalone.dir}/lib">
+			<fileset dir="lib" includes="*.jar" />
+		</copy>
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.core.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.gui.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.desktop.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.visualization.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.gexplugin.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.statistics.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/modules/org.pathvisio.htmlexport.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/org.eclipse.osgi.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/org.bridgedb.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/org.bridgedb.bio.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/org.bridgedb.rdb.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/org.bridgedb.rdb.construct.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/com.springsource.org.jdom-1.1.0.jar" toDir="${standalone.dir}/lib" />
+		<copy file="${pathvisio.dir}/lib/derby.jar" toDir="${standalone.dir}/lib" />
+	</target>
+
+	<target name="build" depends="prepare">
+		<javac srcdir="src" includes="**" debug="true" destdir="build">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="build">
+		<pathconvert refid="project.class.path" property="class.path.manifest" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+					<!-- remove absolute path -->						
+					<flattenmapper />
+				<!-- add lib/ prefix -->
+						<globmapper from="*" to="lib/*" />
+					</chainedmapper>
+				</mapper>
+			</pathconvert>
+		
+		<echo>Creating JAR: ${jar.name}</echo>
+		<jar jarfile="${standalone.dir}/${jar.name}" basedir="build" manifest="META-INF/MANIFEST.MF">
+			<manifest>
+				<attribute name="Class-Path" value="${class.path.manifest}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="install" depends="jar">
+		<copy file="${jar.name}" toDir="${install.dir}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="build" />
+		<delete dir="build-standalone" />
+	</target>
+
+	<target name="dist-clean" depends="clean">
+		<delete file="${jar.name}" />
+		<delete dir="${standalone.dir}" />
+	</target>
+
+</project>

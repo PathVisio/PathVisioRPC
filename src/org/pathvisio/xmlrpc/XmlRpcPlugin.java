@@ -5,14 +5,14 @@ import org.pathvisio.desktop.plugin.Plugin;
 
 public class XmlRpcPlugin implements Plugin
 {
-	Server server;
+	private RpcServer server;
 	
 	@Override
 	public void init(PvDesktop desktop)
 	{
 		try {
-			server = new Server(desktop.getSwingEngine().getEngine());
-			server.init (server.getDefaultPort());
+			server = new RpcServer();
+			server.startServer(server.getDefaultPort());
 		} 
 		catch (Exception exception) 
 		{
