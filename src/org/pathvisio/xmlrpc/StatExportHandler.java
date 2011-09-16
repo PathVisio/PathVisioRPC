@@ -33,11 +33,11 @@ public class StatExportHandler {
 	
 	// call locally from R or GenePattern
 	public String xportInfo (String gexFile, String dbFile, String pathDir, String exprZ, String output) throws Exception {
-		return xportInfo(gexFile, dbFile, pathDir, exprZ, output, false, "", "");
+		return xportInfo(gexFile, dbFile, pathDir, exprZ, output, false, "");
 	}
 	
 	// call from a web portal
-	public String xportInfo (String gexFile, String dbFile, String pathDir, String exprZ, String output, boolean fromWeb, String jobId, String webAddress) throws Exception {
+	public String xportInfo (String gexFile, String dbFile, String pathDir, String exprZ, String output, boolean fromWeb, String webAddress) throws Exception {
 		File gdbFile = new File(dbFile);
 		File gexfile = new File(gexFile);
 		File inPath = new File(pathDir);
@@ -90,7 +90,7 @@ public class StatExportHandler {
 		StatisticsExporter exporter = new StatisticsExporter(gdb, visMgr,gex);
 
 		exporter.export(outPath, result, pvDesktop.getVisualizationManager().getActiveVisualization(),
-				fromWeb, jobId, webAddress);
+				fromWeb, webAddress);
 		
 		return "Results exported!";
 	}
