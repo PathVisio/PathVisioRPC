@@ -90,7 +90,7 @@ public class StatExportHandler {
 		StatisticsExporter exporter = new StatisticsExporter(gdb, visMgr,gex);
 
 		exporter.export(outPath, result, pvDesktop.getVisualizationManager().getActiveVisualization(),
-				fromWeb, webAddress);
+				fromWeb, webAddress, null);
 		
 		return "Results exported!";
 	}
