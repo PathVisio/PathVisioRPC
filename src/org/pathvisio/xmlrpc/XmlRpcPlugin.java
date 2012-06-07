@@ -17,7 +17,8 @@ public class XmlRpcPlugin implements Plugin, ActionListener
 	private JButton startServer;
 	private JTextField portTxt;
 	private RpcServer server;
-		
+	int portAddNum = 2501;
+			
 	@Override
 	public void init(PvDesktop aDesktop)
 	{
@@ -35,8 +36,9 @@ public class XmlRpcPlugin implements Plugin, ActionListener
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String portAdd = portTxt.getText();
-		int portAddNum = Integer.parseInt(portAdd);
-		System.out.println(portAddNum);
+		if (portAdd.length() > 0){
+		portAddNum = Integer.parseInt(portAdd);
+		}
 		try {
 			server = new RpcServer();
 			server.startServer(portAddNum);
