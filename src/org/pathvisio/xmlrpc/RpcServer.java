@@ -31,7 +31,7 @@ public class RpcServer implements XmlRpcHandlerMapping {
 		     XmlRpcServer xmlserver = webServer.getXmlRpcServer();
 		     PropertyHandlerMapping phm = new PropertyHandlerMapping();
 			 phm.addHandler("MakePgexHandler",MakePgexHandler.class);
-			 phm.addHandler("VisXmlHandler", VisualizationHandler.class);
+			 phm.addHandler("VisXmlHandler", VisualizationXMLHandler.class);
 			 phm.addHandler("StatExportHandler", StatExportHandler.class);
 			 xmlserver.setHandlerMapping(phm);
 			 webServer.start();

@@ -24,7 +24,7 @@ import org.pathvisio.visualization.plugins.DataNodeLabel;
  * @author anwesha, magali
  *
  */
-public class VisualizationHandler {
+public class VisualizationHandlermagali {
 	
 	/**
 	 * Create the colorSets and apply them as methods.

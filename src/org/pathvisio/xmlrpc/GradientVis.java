@@ -10,11 +10,10 @@ import org.pathvisio.desktop.visualization.ColorSet;
 
 public class GradientVis {
 	
-	public ColorSet createGradient(int gcount, String colorNames , String values, String sample) 
-			throws IDMapperException, SecurityException, NoSuchFieldException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, IOException {
+	public ColorSet createGradient(int gcount, String colorNames , String values) throws IDMapperException, SecurityException, NoSuchFieldException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, IOException {
 		
 		// Creating new colorset
-		ColorSet gcs = new ColorSet(sample);
+		ColorSet gcs = new ColorSet("c"+gcount);
 		ColorGradient cg = new ColorGradient();//Creating and setting gradient
 		
 		String[] cols = colorNames.split(",");
@@ -24,13 +23,13 @@ public class GradientVis {
 			vals[i] = Integer.parseInt(valus[i]);
 				}
 		for(int i = 0; i < cols.length; i = i+1){
-			// need a hexadecimal format such as 0xFF0000 (for red)
-			Color color = Color.decode(cols[i]);
+			java.lang.reflect.Field field = Class.forName("java.awt.Color").getField(cols[i]);
+			Color color = (Color)field.get(null);
 			cg.addColorValuePair(new ColorValuePair(color,vals[i]));
 			}
 		gcs.setGradient(cg);
 		
 		return gcs;//message for R terminal
-	}
+		}
 
 }
