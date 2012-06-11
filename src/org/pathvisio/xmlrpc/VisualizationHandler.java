@@ -24,7 +24,7 @@ import org.pathvisio.visualization.plugins.DataNodeLabel;
  * @author anwesha, magali
  *
  */
-public class VisualizationHandlermagali {
+public class VisualizationHandler {
 	
 	/**
 	 * Create the colorSets and apply them as methods.
@@ -94,12 +94,12 @@ public class VisualizationHandlermagali {
 		
 		for(int gcount = 0; gcount < gSample.length; gcount = gcount+1 ){
 			GradientVis grevis = new GradientVis();
-			ColorSet csG = grevis.createGradient(gcount, gColorNames[gcount], 
-					gValues[gcount], gSample[gcount]);
-			colsetmgr.addColorSet(csG);
+		//	ColorSet csG = grevis.createGradient(gcount, gColorNames[gcount], 
+			//		gValues[gcount], gSample[gcount]);
+			//colsetmgr.addColorSet(csG);
 			Sample sG = gex.getCurrentGex().findSample(gSample[gcount]);
 			cbe.addUseSample(sG);
-			cbe.getConfiguredSample(sG).setColorSet(csG);
+			//cbe.getConfiguredSample(sG).setColorSet(csG);
 		}
 
 		// Define color rules and add to the ColorByExpression method

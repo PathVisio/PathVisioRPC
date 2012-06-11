@@ -46,7 +46,8 @@ public class RpcServer implements XmlRpcHandlerMapping {
 	
 	public void shutdown() {
 		webServer.shutdown();
-	}
+		System.out.println("Server Stopped successfully ");
+		}
 
 	@Override
 	public XmlRpcHandler getHandler(String arg0)
