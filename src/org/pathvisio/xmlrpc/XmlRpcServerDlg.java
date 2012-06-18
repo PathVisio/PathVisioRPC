@@ -51,6 +51,7 @@ public class XmlRpcServerDlg implements ActionListener
 		portTxt = new JTextField (6);
 		startServer = new JButton ("Start");
 		stopServer = new JButton ("Stop");
+		stopServer.setEnabled(false);
 		helpServer = new JButton("?");
 		
 		pnlServer.add(portTxt);
@@ -72,6 +73,7 @@ public class XmlRpcServerDlg implements ActionListener
 					server.startServer(portAddNum);
 					JOptionPane.showMessageDialog(parentFrame.getComponent(0), "Server started succesfully on port "+portTxt.getText());
 					startServer.setEnabled(false);
+					stopServer.setEnabled(true);
 				}catch (Exception exception){
 					 System.err.println("JavaServer: " + exception);
 				}
@@ -85,6 +87,7 @@ public class XmlRpcServerDlg implements ActionListener
 				JOptionPane.showMessageDialog(parentFrame.getComponent(0), "Server stopped succesfully");
 				portTxt.setEditable(true);
 				startServer.setEnabled(true);
+				stopServer.setEnabled(false);
 			}
 		});
 		
