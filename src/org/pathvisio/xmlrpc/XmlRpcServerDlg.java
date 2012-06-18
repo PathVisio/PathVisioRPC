@@ -63,6 +63,7 @@ public class XmlRpcServerDlg implements ActionListener
 			public void actionPerformed(ActionEvent e)
 			{
 				String portAdd = portTxt.getText();
+				portTxt.setEditable(false);
 				if (portAdd.length() > 0){
 				portAddNum = Integer.parseInt(portAdd);
 				}
@@ -70,6 +71,7 @@ public class XmlRpcServerDlg implements ActionListener
 					server = new RpcServer();
 					server.startServer(portAddNum);
 					JOptionPane.showMessageDialog(parentFrame.getComponent(0), "Server started succesfully on port "+portTxt.getText());
+					startServer.setEnabled(false);
 				}catch (Exception exception){
 					 System.err.println("JavaServer: " + exception);
 				}
@@ -81,6 +83,8 @@ public class XmlRpcServerDlg implements ActionListener
 			{
 				server.shutdown();
 				JOptionPane.showMessageDialog(parentFrame.getComponent(0), "Server stopped succesfully");
+				portTxt.setEditable(true);
+				startServer.setEnabled(true);
 			}
 		});
 		
