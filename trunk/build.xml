@@ -1,87 +1,113 @@
 <?xml version="1.0"?>
-<project name="org.pathvisio.pvconnector" basedir=".">
-
-	<property name="jar.name" value="${ant.project.name}.jar" />
-	<property name="pathvisio.dir" value="../../pathvisio" />
-
-	<property environment="env" />
-	<property name="install.dir" value="${env.HOME}/.PathVisio/plugins/" />
-
-	<property name="standalone.dir" value="standalone" />
-
-	<path id="project.class.path">
-		<fileset dir="${standalone.dir}/lib">
-			<include name="*.jar"/>
-		</fileset>
-	</path>
-
-	<target name="prepare">
-		<mkdir dir="build" />
-		<fail message="Can't find ${pathvisio.dir}/modules/org.pathvisio.core.jar, please specify the path to pathvisio with -Dpathvisio.dir=....">
-			<condition>
-				<not>
-					<available file="${pathvisio.dir}/modules/org.pathvisio.core.jar" />
-				</not>
-			</condition>
-		</fail>
-		<mkdir dir="${standalone.dir}" />
-		<copy toDir="${standalone.dir}/lib">
-			<fileset dir="lib" includes="*.jar" />
-		</copy>
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.core.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.gui.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.desktop.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.visualization.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.gexplugin.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.statistics.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/modules/org.pathvisio.htmlexport.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/org.eclipse.osgi.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/org.bridgedb.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/org.bridgedb.bio.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/org.bridgedb.rdb.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/org.bridgedb.rdb.construct.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/com.springsource.org.jdom-1.1.0.jar" toDir="${standalone.dir}/lib" />
-		<copy file="${pathvisio.dir}/lib/derby.jar" toDir="${standalone.dir}/lib" />
-	</target>
-
-	<target name="build" depends="prepare">
-		<javac srcdir="src" includes="**" debug="true" destdir="build">
-			<classpath refid="project.class.path" />
-		</javac>
-	</target>
-
-	<target name="jar" depends="build">
-		<pathconvert refid="project.class.path" property="class.path.manifest" pathsep=" ">
-			<mapper>
-				<chainedmapper>
-					<!-- remove absolute path -->						
-					<flattenmapper />
-				<!-- add lib/ prefix -->
-						<globmapper from="*" to="lib/*" />
-					</chainedmapper>
-				</mapper>
-			</pathconvert>
+<project name="PathVisioRPC" default="jar" basedir=".">
+		<property name="org.pathvisio.htmlexport.dir" value="../../htmlexport/trunk" />
+		<property name="pathvisio.dir" value="../../common-bundles/trunk" />
+		<property name="common.bundles" value="../../common-bundles/trunk" />
+		<import file="${common.bundles}/plugin-common.xml"/>
 		
-		<echo>Creating JAR: ${jar.name}</echo>
-		<jar jarfile="${standalone.dir}/${jar.name}" basedir="build" manifest="META-INF/MANIFEST.MF">
-			<manifest>
-				<attribute name="Class-Path" value="${class.path.manifest}" />
-			</manifest>
-		</jar>
+		<path id="project.class.path">
+			<fileset dir="${pathvisio.dir}/modules">
+				<include name="org.pathvisio.core.jar"/>
+				<include name="org.pathvisio.gui.jar"/>
+				<include name="org.pathvisio.desktop.jar"/>
+				<include name="org.pathvisio.data.jar"/>
+				<include name="org.pathvisio.visualization.jar"/>
+				<include name="org.pathvisio.gexplugin.jar"/>
+				<include name="org.pathvisio.statistics.jar"/>
+			</fileset>
+			<fileset dir="${pathvisio.dir}/lib">
+				<include name="felix.jar"/>
+				<include name="org.bridgedb.jar"/>
+				<include name="org.bridgedb.bio.jar"/>
+				<include name="org.bridgedb.gui.jar"/>
+				<include name="org.bridgedb.rdb.jar"/>
+				<include name="org.bridgedb.rdb.construct.jar"/>
+				<include name="com.springsource.org.jdom-1.1.0.jar"/>
+				<include name="derby.jar"/>
+				<include name="org.pathvisio.jgoodies.forms.jar"/>
+				<include name="commons-codec-1.5.jar"/>
+			</fileset>
+			<fileset dir="${org.pathvisio.htmlexport.dir}/dist">
+				<include name="org.pathvisio.htmlexport.jar"/>
+			</fileset>
+			<fileset dir="${common.bundles}">
+				<include name="org.apache.commons.httpclient_3.0.1.v201005080501.jar"/>
+				<include name="org.apache.xmlrpc_3.0.0.v20100427-1100.jar"/>
+				<include name="org.kohsuke.args4j_2.0.12.v200910131500.jar"/>
+				<include name="org.apache.commons.io.jar"/>
+			</fileset>
+			<fileset dir="${common.bundles}/lib">
+				<include name="org.pathvisio.ws.commons.util.jar"/>
+			</fileset>	
+		</path>
+	
+	<target name="prepare">
+		<mkdir dir="dist"/>
+		<copy toDir="dist">
+			<fileset dir="${pathvisio.dir}/lib">
+				<include name="commons-codec-1.5.jar"/>
+			</fileset>
+			<fileset dir="${common.bundles}">
+				<include name="org.apache.commons.httpclient_3.0.1.v201005080501.jar"/>
+				<include name="org.apache.xmlrpc_3.0.0.v20100427-1100.jar"/>
+			</fileset>
+		</copy>
 	</target>
-
-	<target name="install" depends="jar">
-		<copy file="${jar.name}" toDir="${install.dir}" />
-	</target>
-
-	<target name="clean">
-		<delete dir="build" />
-		<delete dir="build-standalone" />
-	</target>
-
-	<target name="dist-clean" depends="clean">
-		<delete file="${jar.name}" />
-		<delete dir="${standalone.dir}" />
-	</target>
-
+    
+	<target name="standalone" depends="jar">
+        <jar destfile="dist/${ant.project.name}-standalone.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="org.pathvisio.xmlrpc.JavaServer"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <zipfileset src="dist/PathVisioRPC.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.core.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.gui.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.desktop.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.data.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.visualization.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.statistics.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/modules/org.pathvisio.gexplugin.jar"/>
+				<zipfileset excludes="META-INF/*.SF" src="${org.pathvisio.htmlexport.dir}/dist//org.pathvisio.htmlexport.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/derby.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/com.springsource.org.jdom-1.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.pathvisio.pdftranscoder.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.bridgedb.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.bridgedb.bio.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.bridgedb.rdb.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.bridge_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.css_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.dom_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.dom.svg_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.ext.awt_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.extension_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.parser_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.svggen_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.transcoder_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.util_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.util.gui_1.7.0.v200903091627.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.batik.xml_1.7.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/javax.xml_1.3.4.v201005080400.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.xml.resolver_1.2.0.v201005080400.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.xml.serializer_2.7.1.v201005080400.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.css.sac_1.3.1.v200903091627.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.events_3.0.0.draft20060413_v201105210656.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.smil_1.0.1.v200903091627.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.svg_1.1.0.v201011041433.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.junit_4.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/com.springsource.org.apache.commons.logging-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/org.apache.commons.io.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.eclipse.osgi.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.pathvisio.jgoodies.forms.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.bridgedb.gui.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/commons-math-2.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.bridgedb.rdb.construct.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.apache.felix.bundlerepository-1.6.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/org.apache.commons.httpclient_3.0.1.v201005080501.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/org.apache.xmlrpc_3.0.0.v20100427-1100.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/org.kohsuke.args4j_2.0.12.v200910131500.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.pathvisio.ws.commons.util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/commons-codec-1.5.jar"/>
+        </jar>
+    </target>
 </project>
