@@ -268,7 +268,7 @@ public class PathwayGpml {
 	}
 
 	protected String createPathwayHtml(Pathway pathway, String dbdirectory,
-			boolean gdbCount, String resultdir) {
+			String resultdir) {
 		PreferenceManager.init();
 		if (resultdir.length() == 0) {
 			resultdir = createResultDir();

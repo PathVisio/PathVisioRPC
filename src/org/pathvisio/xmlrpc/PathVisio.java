@@ -528,7 +528,7 @@ public class PathVisio {
 	 */
 	public String importData(String inputfilepath, String dbDirectory,
 			String resultdirectorypath) throws IOException, IDMapperException,
-	ClassNotFoundException {
+			ClassNotFoundException {
 		DataImport data = new DataImport();
 		String resultdir = data.createPgex(inputfilepath, dbDirectory,
 				resultdirectorypath);
@@ -796,7 +796,6 @@ public class PathVisio {
 	 * @param dbdirectory
 	 *            Absolute path of the folder containing the annotation
 	 *            databases
-	 * @param gdbCount
 	 * @param resultdirectory
 	 *            Absolute path of the directory where the html folder should be
 	 *            saved
@@ -806,12 +805,12 @@ public class PathVisio {
 	 * @throws IOException
 	 * @throws IDMapperException
 	 */
-	public String exportPathwayHtml(String pathwayfilepath, String dbdirectory, boolean gdbCount,
+	public String exportPathwayHtml(String pathwayfilepath, String dbdirectory,
 			String resultdirectory) throws ConverterException, IOException,
 			IDMapperException {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathway(pathwayfilepath);
-		String resultDir = path.createPathwayHtml(pathway, dbdirectory, gdbCount,
+		String resultDir = path.createPathwayHtml(pathway, dbdirectory,
 				resultdirectory);
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + this.error;
@@ -842,7 +841,6 @@ public class PathVisio {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
 		String resultDir = path.createPathwayHtml(pathway, dbdirectory,
-				false,
 				resultdirectory);
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + this.error;
