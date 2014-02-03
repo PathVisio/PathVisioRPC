@@ -1,4 +1,4 @@
-// PathVisioRPC : the XML-RPC interface for PathVisio 
+// PathVisioRPC : the XML-RPC interface for PathVisio
 //PathVisio, a tool for data visualization and analysis using Biological Pathways
 // Copyright 2006-2013 BiGCaT Bioinformatics
 //
@@ -29,8 +29,8 @@ import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.data.DataException;
 
 /**
- * Common handler class for all PathVisioRPC functions which can be called
- * through the PathVisioRPC interface.
+ * The Common handler class for all PathVisioRPC functions. This handler class
+ * handles the RPC calls from the client programming language.
  * 
  * These functions can be accessed through any programming language with an
  * XML-RPC module or library. The way to call the function would vary according
@@ -39,7 +39,6 @@ import org.pathvisio.data.DataException;
  * Performing pathway statistics</li> <li>Exports pathways in various formats</li>
  * 
  * @author anwesha
- * @version 1.0
  * 
  */
 
@@ -58,8 +57,8 @@ public class PathVisio {
 	}
 
 	/**
-	 * Function to display all PathVisioRPC functions that can be 
-	 * called by the client
+	 * Function to display all PathVisioRPC functions that can be called by the
+	 * client
 	 * 
 	 * @return List of all available methods
 	 */
@@ -72,8 +71,8 @@ public class PathVisio {
 	}
 
 	/**
-	 * Function to display the different types of DataNodes that
-	 * can be drawn using PathVisio 
+	 * Function to display the different types of DataNodes that can be drawn
+	 * using PathVisio
 	 * 
 	 * @return List of types of DataNodes
 	 */
@@ -83,8 +82,8 @@ public class PathVisio {
 	}
 
 	/**
-	 * Function to display the types of basic interactions that
-	 * can be drawn using PathVisio 
+	 * Function to display the types of basic interactions that can be drawn
+	 * using PathVisio
 	 * 
 	 * @return List of types of Basic Interactions
 	 */
@@ -94,8 +93,8 @@ public class PathVisio {
 	}
 
 	/**
-	 * Functions to display the types of MIM interactions that
-	 * can be drawn using PathVisio 
+	 * Functions to display the types of MIM interactions that can be drawn
+	 * using PathVisio
 	 * 
 	 * @return List of types of MIM Interactions
 	 */
@@ -139,7 +138,7 @@ public class PathVisio {
 		String resultdir = path.createPathway(pathwayname, pathwayauthor,
 				organism, resultdirectory);
 		if (!resultdir.equalsIgnoreCase(resultdirectory)) {
-			resultdir = resultdir + error;
+			resultdir = resultdir + this.error;
 		}
 		return pathwayname + " pathway GPML file created in " + resultdir;
 	}
@@ -160,7 +159,6 @@ public class PathVisio {
 	 * @param datanodesource
 	 *            DataSource for the DataNode
 	 * @return A Unique GraphID of the DataNode
-	 * @throws ConverterException
 	 */
 	public String addDataNode(String pathwayfilepath, String datanodename,
 			String datanodetype, String datanodeid, String datanodesource) {
@@ -173,7 +171,7 @@ public class PathVisio {
 				datanodetype, datanodeid, datanodesource, resultdirectory);
 		String pathwayname = new File(pathwayfilepath).getName();
 		return datanodename + "; ID : " + identifier + " added to "
-				+ pathwayname;
+		+ pathwayname;
 	}
 
 	/**
@@ -190,8 +188,10 @@ public class PathVisio {
 	 *            Identifier for the DataNode
 	 * @param datanodesource
 	 *            DataSource for the DataNode
+	 * @param resultdirectory
+	 * @param reference
+	 * @param comment
 	 * @return A Unique GraphID of the DataNode added
-	 * @throws ConverterException
 	 */
 	public String addDataNodeByURI(String uri, String datanodename,
 			String datanodetype, String datanodeid, String datanodesource,
@@ -209,7 +209,7 @@ public class PathVisio {
 				datanodetype, datanodeid, datanodesource, resultdirectory);
 		String pathwayname = pathway.getMappInfo().getMapInfoName();
 		return datanodename + "; ID : " + identifier + " added to "
-				+ pathwayname;
+		+ pathwayname;
 	}
 
 	/**
@@ -230,7 +230,6 @@ public class PathVisio {
 	 * @param endarrowtype
 	 *            Type of the arrow at the end of the Line
 	 * @return A Unique GraphID for the Line added
-	 * @throws ConverterException
 	 */
 	public String addInteraction(String pathwayfilepath, String linename,
 			String startdatanode, String enddatanode, String startarrowtype,
@@ -241,7 +240,7 @@ public class PathVisio {
 		String identifier = path.addLine(pathway, linename, startdatanode,
 				enddatanode, startarrowtype, endarrowtype, resultdirectory);
 		return linename + "; ID : " + identifier + " added to "
-				+ pathway.getMappInfo().getMapInfoName();
+		+ pathway.getMappInfo().getMapInfoName();
 	}
 
 	/**
@@ -266,6 +265,7 @@ public class PathVisio {
 	 *            Identifier for the Line
 	 * @param linesource
 	 *            DataSource for the Line
+	 * @param resultdirectory
 	 * @return A Unique GraphID for the Line added
 	 * @throws ConverterException
 	 */
@@ -278,7 +278,7 @@ public class PathVisio {
 		String identifier = path.addLine(pathway, linename, startdatanode,
 				enddatanode, startarrowtype, endarrowtype, resultdirectory);
 		return linename + "; ID : " + identifier + " added to "
-				+ pathway.getMappInfo().getMapInfoName();
+		+ pathway.getMappInfo().getMapInfoName();
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class PathVisio {
 	public String addInteractionByID(String pathwayfilepath, String linename,
 			String startdatanodegraphid, String enddatanodegraphid,
 			String startarrowtype, String endarrowtype)
-			throws ConverterException {
+					throws ConverterException {
 
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = new Pathway();
@@ -314,7 +314,7 @@ public class PathVisio {
 				startdatanodegraphid, enddatanodegraphid, startarrowtype,
 				endarrowtype, resultdirectory);
 		return linename + "; ID : " + identifier + " added to "
-				+ pathway.getMappInfo().getMapInfoName();
+		+ pathway.getMappInfo().getMapInfoName();
 	}
 
 	/**
@@ -339,6 +339,7 @@ public class PathVisio {
 	 *            Identifier for the Line
 	 * @param linesource
 	 *            DataSource for the Line
+	 * @param resultdirectory
 	 * @return A Unique GraphID for the Line added
 	 * @throws ConverterException
 	 */
@@ -346,7 +347,7 @@ public class PathVisio {
 			String startdatanodegraphid, String enddatanodegraphid,
 			String startarrowtype, String endarrowtype, String lineid,
 			String linesource, String resultdirectory)
-			throws ConverterException {
+					throws ConverterException {
 
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
@@ -354,14 +355,13 @@ public class PathVisio {
 				startdatanodegraphid, enddatanodegraphid, startarrowtype,
 				endarrowtype, resultdirectory);
 		return linename + "; ID : " + identifier + " added to "
-				+ pathway.getMappInfo().getMapInfoName();
+		+ pathway.getMappInfo().getMapInfoName();
 	}
 
 	/**
-	 * Annotates DataNodes in a pathway GPML file saved on disk, with
-	 * an identifier and data source and saves the pathway GPML file in the
-	 * result directory Annotation can also be added while adding DataNodes and
-	 * Lines
+	 * Annotates DataNodes in a pathway GPML file saved on disk, with an
+	 * identifier and data source and saves the pathway GPML file in the result
+	 * directory Annotation can also be added while adding DataNodes and Lines
 	 * 
 	 * @param pathwayfilepath
 	 *            Absolute path of the pathway GPML file
@@ -383,15 +383,15 @@ public class PathVisio {
 		String identifier = path.annotateElement(pathway, elementname,
 				elementid, elementsource, resultdirectory);
 		return elementname + " with ID:" + identifier + " in "
-				+ pathway.getMappInfo().getMapInfoName()
-				+ " has been annotated";
+		+ pathway.getMappInfo().getMapInfoName()
+		+ " has been annotated";
 	}
 
 	/**
-	 * Annotates DataNodes in a Wikipathways pathway downloaded by
-	 * it's Wikipathways ID, with an identifier and data source and saves the
-	 * pathway GPML file in the result directory. Annotation can also be added
-	 * while adding DataNodes and Lines.
+	 * Annotates DataNodes in a Wikipathways pathway downloaded by it's
+	 * Wikipathways ID, with an identifier and data source and saves the pathway
+	 * GPML file in the result directory. Annotation can also be added while
+	 * adding DataNodes and Lines.
 	 * 
 	 * @param uri
 	 *            A wikipathways ID for the pathway
@@ -409,15 +409,15 @@ public class PathVisio {
 	 */
 	public String annotateElementByURI(String uri, String elementname,
 			String elementid, String elementsource, String resultdirectory)
-			throws ConverterException {
+					throws ConverterException {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = new Pathway();
 		path.openPathwayByURI(uri);
 		String identifier = path.annotateElement(pathway, elementname,
 				elementid, elementsource, resultdirectory);
 		return elementname + " with ID:" + identifier + " in "
-				+ pathway.getMappInfo().getMapInfoName()
-				+ " has been annotated";
+		+ pathway.getMappInfo().getMapInfoName()
+		+ " has been annotated";
 	}
 
 	/**
@@ -431,7 +431,6 @@ public class PathVisio {
 	 *            Name of the element (DataNode or Line) to be removed pathway
 	 *            GPML file should be saved
 	 * @return Name of the element removed and the pathway it was removed from.
-	 * @throws ConverterException
 	 */
 	public String removeElement(String pathwayfilepath, String elementname) {
 		PathwayGpml path = new PathwayGpml();
@@ -529,16 +528,16 @@ public class PathVisio {
 	 */
 	public String importData(String inputfilepath, String dbDirectory,
 			String resultdirectorypath) throws IOException, IDMapperException,
-			ClassNotFoundException {
+	ClassNotFoundException {
 		DataImport data = new DataImport();
 		String resultdir = data.createPgex(inputfilepath, dbDirectory,
 				resultdirectorypath);
 		if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
-			resultdir = resultdir + error;
+			resultdir = resultdir + this.error;
 		}
 		String inputfile = new File(inputfilepath).getName();
 		return inputfile + " imported & " + inputfile + ".pgex created in"
-				+ resultdir;
+		+ resultdir;
 	}
 
 	/**
@@ -610,7 +609,7 @@ public class PathVisio {
 	 */
 	public String visualizeData(String pathwayfilepath, String gexfilepath,
 			String dbdirectory, String resultdirectory)
-			throws ConverterException {
+					throws ConverterException {
 
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathway(pathwayfilepath);
@@ -626,7 +625,7 @@ public class PathVisio {
 				+ pathway.getMappInfo().getMapInfoName());
 		output.mkdirs();
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
-			resultDir = resultDir + error;
+			resultDir = resultDir + this.error;
 		}
 		StatExport vis = new StatExport();
 		try {
@@ -689,14 +688,14 @@ public class PathVisio {
 	}
 
 	/**
-	 * Creates a image file from the pathway GPML saved in disk and saves it in
+	 * Exports the image of a pathway GPML saved on disk and saves it in
 	 * the result directory
 	 * 
 	 * @param pathwayfilepath
 	 *            Absolute path of the pathway GPML file
 	 * @param exportfiletype
 	 *            The image format to export the pathway in. Possible formats
-	 *            "png", "svg" or "pdf".
+	 *            "png", "svg", "tiff" or "pdf".
 	 * @param resultdirectory
 	 *            Absolute path of the directory where the image should be saved
 	 * @return Pathway image created in the result directory
@@ -712,7 +711,7 @@ public class PathVisio {
 		String resultDir = path.exportPathway(pathway, exportfiletype,
 				resultdirectory);
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
-			resultDir = resultDir + error;
+			resultDir = resultDir + this.error;
 		}
 		return pathway.getMappInfo().getMapInfoName() + "." + exportfiletype
 				+ " file created in " + resultDir;
@@ -725,7 +724,8 @@ public class PathVisio {
 	 * @param uri
 	 *            Wikipathways ID of the pathway
 	 * @param exportfiletype
-	 *            Type of image required (png, svg or pdf))
+	 *             The image format to export the pathway in. Possible formats
+	 *            "png", "svg", "tiff" or "pdf".
 	 * @param resultdirectory
 	 *            Absolute path of the directory where the image should be saved
 	 * @return Pathway image created in result directory
@@ -755,7 +755,7 @@ public class PathVisio {
 	 * @param pathwayfilepath
 	 *            Absolute path of the pathway GPML file
 	 * @param filetype
-	 *            Type of image "png", "svg" or "pdf"
+	 *            Type of image "png", "svg", "tiff" or "pdf"
 	 * @return Byte Array
 	 * @throws ConverterException
 	 * @throws IOException
@@ -775,7 +775,7 @@ public class PathVisio {
 	 * @param uri
 	 *            Wikipathways ID of the pathay
 	 * @param exportfiletype
-	 *            Type of image required ("png","svg" or "pdf")
+	 *            Type of image required ("png","svg", "tiff", or "pdf")
 	 * @return Byte Array of the pathway image
 	 * @throws ConverterException
 	 * @throws IOException
@@ -786,6 +786,69 @@ public class PathVisio {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
 		return path.exportPathwayByte(pathway, exportfiletype);
+	}
+
+	/**
+	 * Exports a pathway GPML file along with backpages in html format
+	 * 
+	 * @param pathwayfilepath
+	 *            Absolute path of the pathway GPML file
+	 * @param dbdirectory
+	 *            Absolute path of the folder containing the annotation
+	 *            databases
+	 * @param gdbCount
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the html folder should be
+	 *            saved
+	 * @return Html folder containing pathway and backpages created in result
+	 *         directory
+	 * @throws ConverterException
+	 * @throws IOException
+	 * @throws IDMapperException
+	 */
+	public String exportPathwayHtml(String pathwayfilepath, String dbdirectory, boolean gdbCount,
+			String resultdirectory) throws ConverterException, IOException,
+			IDMapperException {
+		PathwayGpml path = new PathwayGpml();
+		Pathway pathway = path.openPathway(pathwayfilepath);
+		String resultDir = path.createPathwayHtml(pathway, dbdirectory, gdbCount,
+				resultdirectory);
+		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+			resultDir = resultDir + this.error;
+		}
+		return pathway.getMappInfo().getMapInfoName() + "." + "html"
+		+ " file created in " + resultDir;
+	}
+
+	/**
+	 * Exports a Wikipathways pathway file along with backpages in html format,
+	 * provided it's WikiPathways ID
+	 * 
+	 * @param uri
+	 *            Wikipathways ID of the pathway
+	 * @param dbdirectory
+	 *            Absolute path of the folder containing the annotation
+	 *            databases
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the html folder should be saved
+	 * @return Html folder containing pathway and backpages created in result directory
+	 * @throws ConverterException
+	 * @throws IOException
+	 * @throws IDMapperException
+	 */
+	public String exportPathwayHtmlFromURI(String uri, String dbdirectory,
+			String resultdirectory) throws ConverterException, IOException,
+			IDMapperException {
+		PathwayGpml path = new PathwayGpml();
+		Pathway pathway = path.openPathwayByURI(uri);
+		String resultDir = path.createPathwayHtml(pathway, dbdirectory,
+				false,
+				resultdirectory);
+		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+			resultDir = resultDir + this.error;
+		}
+		return pathway.getMappInfo().getMapInfoName() + "." + "html"
+		+ " file created in " + resultDir;
 	}
 
 	/**
@@ -819,7 +882,7 @@ public class PathVisio {
 			e.printStackTrace();
 		}
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
-			resultDir = resultDir + error;
+			resultDir = resultDir + this.error;
 		}
 
 		return "Results exported to " + resultDir;

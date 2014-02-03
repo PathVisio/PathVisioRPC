@@ -16,7 +16,8 @@
 //
 package org.pathvisio.xmlrpc;
 
-import org.apache.xmlrpc.*;
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 

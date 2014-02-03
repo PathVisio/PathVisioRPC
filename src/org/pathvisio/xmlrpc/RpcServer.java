@@ -16,7 +16,8 @@
 //
 package org.pathvisio.xmlrpc;
 
-import org.apache.xmlrpc.*;
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.XmlRpcHandler;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
@@ -38,19 +39,23 @@ public class RpcServer implements XmlRpcHandlerMapping {
 
 	private WebServer webServer;
 
-	public int startServer(int port) {
+	/**
+	 * @param port
+	 * @return
+	 */
+	public int startServer(final int port) {
 		if (this.port != port) {
 			this.port = port;
 		}
 		try {
 			System.out.println("Starting PathVisioRPC Server...");
 
-			webServer = new WebServer(port);
-			XmlRpcServer xmlserver = webServer.getXmlRpcServer();
+			this.webServer = new WebServer(port);
+			XmlRpcServer xmlserver = this.webServer.getXmlRpcServer();
 			PropertyHandlerMapping phm = new PropertyHandlerMapping();
 			phm.addHandler("PathVisio", PathVisio.class);
 			xmlserver.setHandlerMapping(phm);
-			webServer.start();
+			this.webServer.start();
 			System.out.println("Server Started successfully on port " + port);
 			System.out.println("Accepting requests ...");
 		} catch (Exception exception) {
@@ -59,8 +64,11 @@ public class RpcServer implements XmlRpcHandlerMapping {
 		return port;
 	}
 
+	/**
+	 * 
+	 */
 	public void shutdown() {
-		webServer.shutdown();
+		this.webServer.shutdown();
 		System.out.println("Server Stopped successfully ");
 	}
 
@@ -71,7 +79,7 @@ public class RpcServer implements XmlRpcHandlerMapping {
 	}
 
 	/**
-	 * Sets the default port for the PathVisioRPC server to start on 
+	 * Sets the default port for the PathVisioRPC server to start on
 	 * The default port is 7777
 	 * 
 	 * @return the default port

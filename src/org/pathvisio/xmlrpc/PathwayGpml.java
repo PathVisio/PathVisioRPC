@@ -44,6 +44,7 @@ import org.pathvisio.core.model.StaticProperty;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.util.FileUtils;
 import org.pathvisio.core.view.MIMShapes;
+import org.pathvisio.htmlexport.plugin.HtmlExporter;
 
 /**
  * Functions to create, edit and export Biological pathways and Add, annotate
@@ -77,14 +78,16 @@ public class PathwayGpml {
 			String organism, String resultdir) {
 		Pathway pathway = new Pathway();
 
-		mappInfo = PathwayElement.createPathwayElement(ObjectType.MAPPINFO);
-		mappInfo.setStaticProperty(StaticProperty.MAPINFONAME, pathwayname);
-		mappInfo.setStaticProperty(StaticProperty.AUTHOR, pathwayauthor);
-		mappInfo.setStaticProperty(StaticProperty.ORGANISM, organism);
-		pathway.add(mappInfo);
+		this.mappInfo = PathwayElement
+				.createPathwayElement(ObjectType.MAPPINFO);
+		this.mappInfo
+		.setStaticProperty(StaticProperty.MAPINFONAME, pathwayname);
+		this.mappInfo.setStaticProperty(StaticProperty.AUTHOR, pathwayauthor);
+		this.mappInfo.setStaticProperty(StaticProperty.ORGANISM, organism);
+		pathway.add(this.mappInfo);
 
-		infoBox = PathwayElement.createPathwayElement(ObjectType.INFOBOX);
-		pathway.add(infoBox);
+		this.infoBox = PathwayElement.createPathwayElement(ObjectType.INFOBOX);
+		pathway.add(this.infoBox);
 		if (resultdir.length() == 0) {
 			resultdir = createResultDir();
 		} else {
@@ -130,7 +133,7 @@ public class PathwayGpml {
 		return pathway;
 	}
 
-	protected void addGraphIds(Pathway pathway) throws ConverterException {
+	protected void addGraphIds(Pathway pathway) {
 		for (PathwayElement pe : pathway.getDataObjects()) {
 			String id = pe.getGraphId();
 			if (id == null || "".equals(id)) {
@@ -147,8 +150,8 @@ public class PathwayGpml {
 					do {
 						newId = "id"
 								+ Integer
-										.toHexString((builder.toString() + ("_" + i))
-												.hashCode());
+								.toHexString((builder.toString() + ("_" + i))
+										.hashCode());
 						i++;
 					} while (pathway.getGraphIds().contains(newId));
 					pe.setGraphId(newId);
@@ -165,8 +168,8 @@ public class PathwayGpml {
 					do {
 						newId = "id"
 								+ Integer
-										.toHexString((builder.toString() + ("_" + i))
-												.hashCode());
+								.toHexString((builder.toString() + ("_" + i))
+										.hashCode());
 						i++;
 					} while (pathway.getGraphIds().contains(newId));
 					pe.setGraphId(newId);
@@ -252,6 +255,43 @@ public class PathwayGpml {
 				e.printStackTrace();
 			}
 		}
+
+		if (filetype.equalsIgnoreCase("tiff")) {
+			try {
+				new BatikImageExporter(ImageExporter.TYPE_TIFF).doExport(
+						pathwayfile, pathway);
+			} catch (ConverterException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	protected String createPathwayHtml(Pathway pathway, String dbdirectory,
+			boolean gdbCount, String resultdir) {
+		PreferenceManager.init();
+		if (resultdir.length() == 0) {
+			resultdir = createResultDir();
+		} else {
+			if (!(new File(resultdir).exists())) {
+				resultdir = createResultDir();
+			}
+		}
+		File output = new File(resultdir + PathwayGpml.separator
+				+ pathway.getMappInfo().getMapInfoName());
+		output.mkdirs();
+		PathwayGpml path = new PathwayGpml();
+
+		try {
+			HtmlExporter exporter = new HtmlExporter(
+					path.loadGdbs(dbdirectory), null, null);
+			exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
+					output);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultdir;
 	}
 
 	protected void datanodeLayout(Pathway pathway) {
@@ -406,7 +446,7 @@ public class PathwayGpml {
 				"mim-catalysis", "mim-inhibition", "mim-cleavage",
 				"mim-covalent-bond", "mim-branching-left",
 				"mim-branching-right", "mim-transcription-translation",
-				"mim-gap" };
+		"mim-gap" };
 		return mimtypes;
 	}
 
@@ -497,8 +537,16 @@ public class PathwayGpml {
 
 	}
 
-	protected void loadGdbs(String dbDir) throws ClassNotFoundException,
-			IDMapperException {
+	protected IDMapper loadGdb(String dbfile) throws ClassNotFoundException,
+	IDMapperException {
+		File dbFile = new File(dbfile);
+		Class.forName("org.bridgedb.rdb.IDMapperRdb");
+		IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
+		return gdb;
+	}
+
+	protected IDMapper loadGdbs(String dbDir) throws ClassNotFoundException,
+	IDMapperException {
 		File dbDirectory = new File(dbDir);
 		List<File> bridgeFiles = FileUtils
 				.getFiles(dbDirectory, "bridge", true);
@@ -509,5 +557,6 @@ public class PathwayGpml {
 				loadedGdbs.addIDMapper(gdb);
 			}
 		}
+		return loadedGdbs;
 	}
 }

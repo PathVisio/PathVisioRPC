@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.bridgedb.IDMapperException;
 import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.core.util.ProgressKeeper;
 import org.pathvisio.desktop.gex.GexManager;
 import org.pathvisio.gexplugin.GexTxtImporter;
 import org.pathvisio.gexplugin.ImportInformation;
@@ -34,7 +35,7 @@ import org.pathvisio.gexplugin.ImportInformation;
  */
 
 public class DataImport {
-
+	
 	/**
 	 * @param inputFile
 	 *            full path of file containing data
@@ -54,6 +55,8 @@ public class DataImport {
 		GexManager gexManager = new GexManager();
 		ImportInformation info = new ImportInformation();
 		PathwayGpml path = new PathwayGpml();
+		ProgressKeeper pk;
+		
 		if (resultdir.length() == 0) {
 			resultdir = path.createResultDir();
 		} else {
@@ -66,6 +69,11 @@ public class DataImport {
 		info.setGexName(resultdir + PathwayGpml.separator + inputfile);
 
 		path.loadGdbs(dbDir);
+		
+		System.out.println("syscode"+info.getSyscodeColumn());
+		System.out.println(PathwayGpml.loadedGdbs.getMappers().toString()+PathwayGpml.loadedGdbs.isConnected());
+		
+		
 		GexTxtImporter.importFromTxt(info, null, PathwayGpml.loadedGdbs,
 				gexManager);
 
