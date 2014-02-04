@@ -1,0 +1,34 @@
+#plugin.props
+
+# This props file should be filled out and included in the bundle jar file.  This props file will be used
+# to put information into the PathVisio plugin and update manager.
+
+# -- The following properties are REQUIRED -- #
+
+# The plugin name that will be displayed to users, white space within name is not allowed
+pluginName=PathVisioRPC
+
+# Description used to give users information about the plugin such as what it does.
+# Html tags are encouraged for formatting purposes.
+pluginDescription=XMLRPC server implementation of PathVisio functionality.
+
+# plugin version number, this must be three numbers separated by decimals.  Ex. 0.2.0, 14.03.0
+pluginVersion=1.0.0
+
+# Compatible PathVisio version. If there are more than one version, separate by ",".
+pvVersion=2.0.11
+
+# Category, use one of the categories listed on ... (website)
+pluginCategory=Other
+
+# -- The following properties are OPTIONAL -- #
+
+# URL to a website that gives more information about your bundle, Ex. http://my-lab-site.org
+projectURL=http://pathvisio.org/wiki/HtmlExporter
+
+# List of authors.  Note each author and institution pair are separated by a : (colon)
+# each additional author institution pair must be separated from other pairs bye a ; (semicolon)
+pluginAuthorsInstitutions=Thomas Kelder:Maastricht University
+
+# Date this plugin/plugin version was released
+releaseDate=

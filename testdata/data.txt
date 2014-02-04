@@ -1,0 +1,2 @@
+ID	logFC	SysCode	
+12345	2.5	L
