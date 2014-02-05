@@ -34,72 +34,79 @@ import javax.swing.JTextField;
  * 
  */
 public class XmlRpcServerDlg implements ActionListener {
-	private final JFrame parentFrame;
+	private JFrame parentFrame;
 	private JDialog serverDlg;
 	private JButton startServer;
 	private JButton stopServer;
 	private JButton helpServer;
 	private JTextField portTxt;
 	private RpcServer server;
-	int portAddNum = 7777;
+	private int portAddNum = 7777;
 
+	/**
+	 * @param frame
+	 */
 	public XmlRpcServerDlg(JFrame frame) {
-		this.parentFrame = frame;
+		setParentFrame(frame);
 	}
 
 	protected void createAndShowGUI() {
-		serverDlg = new JDialog(parentFrame);
+		setServerDlg(new JDialog(this.getParentFrame()));
 		JPanel pnlServer = new JPanel();
 
-		portTxt = new JTextField(6);
-		startServer = new JButton("Start");
-		stopServer = new JButton("Stop");
-		stopServer.setEnabled(false);
-		helpServer = new JButton("?");
+		setPortTxt(new JTextField(6));
+		setStartServer(new JButton("Start"));
+		setStopServer(new JButton("Stop"));
+		getStopServer().setEnabled(false);
+		setHelpServer(new JButton("?"));
 
-		pnlServer.add(portTxt);
-		pnlServer.add(startServer);
-		pnlServer.add(stopServer);
-		pnlServer.add(helpServer);
+		pnlServer.add(this.getPortTxt());
+		pnlServer.add(this.getStartServer());
+		pnlServer.add(this.getStopServer());
+		pnlServer.add(this.getHelpServer());
 
-		portTxt.addActionListener(this);
-		startServer.addActionListener(new ActionListener() {
+		this.getPortTxt().addActionListener(this);
+		this.getStartServer().addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				String portAdd = portTxt.getText();
-				portTxt.setEditable(false);
+				String portAdd = XmlRpcServerDlg.this.getPortTxt().getText();
+				XmlRpcServerDlg.this.getPortTxt().setEditable(false);
 				if (portAdd.length() > 0) {
-					portAddNum = Integer.parseInt(portAdd);
+					XmlRpcServerDlg.this.setPortAddNum(Integer.parseInt(portAdd));
 				}
 				try {
-					server = new RpcServer();
-					server.startServer(portAddNum);
+					XmlRpcServerDlg.this.setServer(new RpcServer());
+					XmlRpcServerDlg.this.getServer()
+					.startServer(XmlRpcServerDlg.this.getPortAddNum());
 					JOptionPane.showMessageDialog(
-							parentFrame.getComponent(0),
+							XmlRpcServerDlg.this.getParentFrame().getComponent(0),
 							"Server started succesfully on port "
-									+ portTxt.getText());
-					startServer.setEnabled(false);
-					stopServer.setEnabled(true);
+									+ XmlRpcServerDlg.this.getPortTxt().getText());
+					XmlRpcServerDlg.this.getStartServer().setEnabled(false);
+					XmlRpcServerDlg.this.getStopServer().setEnabled(true);
 				} catch (Exception exception) {
 					System.err.println("JavaServer: " + exception);
 				}
 			}
 		});
 
-		stopServer.addActionListener(new ActionListener() {
+		this.getStopServer().addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				server.shutdown();
-				JOptionPane.showMessageDialog(parentFrame.getComponent(0),
+				XmlRpcServerDlg.this.getServer().shutdown();
+				JOptionPane.showMessageDialog(getParentFrame().getComponent(0),
 						"Server stopped succesfully");
-				portTxt.setEditable(true);
-				startServer.setEnabled(true);
-				stopServer.setEnabled(false);
+				getPortTxt().setEditable(true);
+				getStartServer().setEnabled(true);
+				getStopServer().setEnabled(false);
 			}
 		});
 
-		helpServer.addActionListener(new ActionListener() {
+		getHelpServer().addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(
-						parentFrame.getComponent(0),
+						getParentFrame().getComponent(0),
 						""
 								+ "Text Area : Enter the port on which you want to start the server. \n"
 								+ "Start Button : Starts the xmlrpc server.You can then call pathvisio\n"
@@ -107,29 +114,142 @@ public class XmlRpcServerDlg implements ActionListener {
 								+ " Stops the xmlrpc server.");
 			}
 		});
-		helpServer.setToolTipText("Help about this dialog");
+		getHelpServer().setToolTipText("Help about this dialog");
 
-		serverDlg.setTitle("XmlRpc Server Configuration");
-		serverDlg.add(pnlServer);
-		serverDlg.pack();
-		serverDlg.setSize(300, 50);
-		serverDlg.setLocationRelativeTo(parentFrame);
-		serverDlg.setVisible(true);
+		getServerDlg().setTitle("XmlRpc Server Configuration");
+		getServerDlg().add(pnlServer);
+		getServerDlg().pack();
+		getServerDlg().setSize(300, 50);
+		getServerDlg().setLocationRelativeTo(getParentFrame());
+		getServerDlg().setVisible(true);
 	}
 
 	/**
 	 * Launches the PathVisioRPC server as a PathVisio plugin
 	 */
+	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		String portAdd = portTxt.getText();
+		String portAdd = getPortTxt().getText();
 		if (portAdd.length() > 0) {
-			portAddNum = Integer.parseInt(portAdd);
+			setPortAddNum(Integer.parseInt(portAdd));
 		}
 		try {
-			server = new RpcServer();
-			server.startServer(portAddNum);
+			setServer(new RpcServer());
+			getServer().startServer(getPortAddNum());
 		} catch (Exception exception) {
 			System.err.println("JavaServer: " + exception);
 		}
+	}
+
+	/**
+	 * @return the parentFrame
+	 */
+	public JFrame getParentFrame() {
+		return this.parentFrame;
+	}
+
+	/**
+	 * @param parentFrame the parentFrame to set
+	 */
+	public void setParentFrame(JFrame parentFrame) {
+		this.parentFrame = parentFrame;
+	}
+
+	/**
+	 * @return the serverDlg
+	 */
+	public JDialog getServerDlg() {
+		return this.serverDlg;
+	}
+
+	/**
+	 * @param serverDlg the serverDlg to set
+	 */
+	public void setServerDlg(JDialog serverDlg) {
+		this.serverDlg = serverDlg;
+	}
+
+	/**
+	 * @return the portTxt
+	 */
+	public JTextField getPortTxt() {
+		return this.portTxt;
+	}
+
+	/**
+	 * @param portTxt the portTxt to set
+	 */
+	public void setPortTxt(JTextField portTxt) {
+		this.portTxt = portTxt;
+	}
+
+	/**
+	 * @return the startServer
+	 */
+	public JButton getStartServer() {
+		return this.startServer;
+	}
+
+	/**
+	 * @param startServer the startServer to set
+	 */
+	public void setStartServer(JButton startServer) {
+		this.startServer = startServer;
+	}
+
+	/**
+	 * @return the stopServer
+	 */
+	public JButton getStopServer() {
+		return this.stopServer;
+	}
+
+	/**
+	 * @param stopServer the stopServer to set
+	 */
+	public void setStopServer(JButton stopServer) {
+		this.stopServer = stopServer;
+	}
+
+	/**
+	 * @return the helpServer
+	 */
+	public JButton getHelpServer() {
+		return this.helpServer;
+	}
+
+	/**
+	 * @param helpServer the helpServer to set
+	 */
+	public void setHelpServer(JButton helpServer) {
+		this.helpServer = helpServer;
+	}
+
+	/**
+	 * @return the portAddNum
+	 */
+	public int getPortAddNum() {
+		return this.portAddNum;
+	}
+
+	/**
+	 * @param portAddNum the portAddNum to set
+	 */
+	public void setPortAddNum(int portAddNum) {
+		this.portAddNum = portAddNum;
+	}
+
+	/**
+	 * @return the server
+	 */
+	public RpcServer getServer() {
+		return this.server;
+	}
+
+	/**
+	 * @param server the server to set
+	 */
+	public void setServer(RpcServer server) {
+		this.server = server;
 	}
 }

@@ -516,6 +516,10 @@ public class PathVisio {
 	 * 
 	 * @param inputfilepath
 	 *            Absolute path of the tab delimited input file
+	 * @param SysCode
+	 *            System Code of the Database for identifier mapping
+	 * @param SysColNum
+	 *            Colum Number of the System Code column
 	 * @param dbDirectory
 	 *            Absolute path of the folder containing the annotation
 	 *            databases to be used
@@ -526,11 +530,15 @@ public class PathVisio {
 	 * @throws IDMapperException
 	 * @throws ClassNotFoundException
 	 */
-	public String importData(String inputfilepath, String dbDirectory,
+	public String importData(String inputfilepath, String SysCode,
+			String SysColNum, String dbDirectory,
 			String resultdirectorypath) throws IOException, IDMapperException,
 			ClassNotFoundException {
 		DataImport data = new DataImport();
-		String resultdir = data.createPgex(inputfilepath, dbDirectory,
+		int syscolnum = Integer.parseInt(SysColNum);
+		String resultdir = data.createPgex(inputfilepath, SysCode,
+				syscolnum,
+				dbDirectory,
 				resultdirectorypath);
 		if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
 			resultdir = resultdir + this.error;

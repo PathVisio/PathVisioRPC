@@ -26,7 +26,7 @@ import org.pathvisio.desktop.plugin.Plugin;
 /**
  * Creates menu item for the PathVisioRPC plugin.
  * 
- * @author Anwesha Dutta
+ * @author Anwesha
  * 
  */
 public class XmlRpcPlugin implements Plugin {
@@ -38,18 +38,10 @@ public class XmlRpcPlugin implements Plugin {
 	 */
 	@Override
 	public void init(PvDesktop aDesktop) {
-		desktop = aDesktop;
+		setDesktop(aDesktop);
 
 		// register the action in the "Plugins" menu.
-		desktop.registerMenuAction("Plugins", rpcDlgAction);
-
-	}
-	
-	public void done(PvDesktop aDesktop) {
-		desktop = aDesktop;
-
-		// deregister the action in the "Plugins" menu.
-		desktop.unregisterMenuAction("Plugins", rpcDlgAction);
+		getDesktop().registerMenuAction("Plugins", getRpcDlgAction());
 
 	}
 
@@ -73,22 +65,39 @@ public class XmlRpcPlugin implements Plugin {
 		/**
 		 * called when the user selects the menu item
 		 */
+		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			XmlRpcServerDlg dlg = new XmlRpcServerDlg(desktop.getFrame());
+			XmlRpcServerDlg dlg = new XmlRpcServerDlg(getDesktop().getFrame());
 			dlg.createAndShowGUI();
 		}
 	}
 
-	/**
-	 * Stops the plugin and deregisters menu items
-	 */
 	@Override
 	public void done() {
-		// TODO Auto-generated method stub
-		// Gives errors for standalone
-		// Works fine as PathVisio plugin
-		// server.shutdown();
+		// deregister the action in the "Plugins" menu.
+		getDesktop().unregisterMenuAction("Plugins", getRpcDlgAction());
 
+	}
+
+	/**
+	 * @return the desktop
+	 */
+	public PvDesktop getDesktop() {
+		return this.desktop;
+	}
+
+	/**
+	 * @param desktop the desktop to set
+	 */
+	public void setDesktop(PvDesktop desktop) {
+		this.desktop = desktop;
+	}
+
+	/**
+	 * @return the rpcDlgAction
+	 */
+	public RpcDlgAction getRpcDlgAction() {
+		return this.rpcDlgAction;
 	}
 
 }

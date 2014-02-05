@@ -1,6 +1,6 @@
 // PathVisioRPC : the XMLRPC interface for PathVisio,
 // a tool for data visualization and analysis using Biological Pathways
-// Copyright 2006-2013 BiGCaT Bioinformatics
+// Copyright 2006-2014 BiGCaT Bioinformatics
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,15 +26,14 @@ import org.pathvisio.desktop.plugin.Plugin;
  * @author anwesha
  */
 public class Activator implements BundleActivator {
-
+	XmlRpcPlugin plugin = new XmlRpcPlugin();
 	/**
 	 * Starts the plugin in PathVisio
 	 */
 	@Override
 	public void start(BundleContext context) throws Exception {
 
-		XmlRpcPlugin plugin = new XmlRpcPlugin();
-		context.registerService(Plugin.class.getName(), plugin, null);
+		context.registerService(Plugin.class.getName(), this.plugin, null);
 
 	}
 
@@ -43,7 +42,7 @@ public class Activator implements BundleActivator {
 	 */
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		
+		this.plugin.done();
 	}
 
 }

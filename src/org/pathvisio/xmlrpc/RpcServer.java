@@ -59,6 +59,7 @@ public class RpcServer implements XmlRpcHandlerMapping {
 			System.out.println("Server Started successfully on port " + port);
 			System.out.println("Accepting requests ...");
 		} catch (Exception exception) {
+			this.webServer.log(exception);
 			System.err.println("JavaServer: " + exception);
 		}
 		return port;
@@ -68,8 +69,14 @@ public class RpcServer implements XmlRpcHandlerMapping {
 	 * 
 	 */
 	public void shutdown() {
-		this.webServer.shutdown();
-		System.out.println("Server Stopped successfully ");
+		try {
+			this.webServer.shutdown();
+			System.out.println("Server Stopped successfully ");
+		} catch (Exception e) {
+			this.webServer.log(e);
+			System.err.println("JavaServer: " + e);
+		}
+
 	}
 
 	@Override
