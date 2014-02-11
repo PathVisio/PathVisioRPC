@@ -536,6 +536,8 @@ public class PathVisio {
 			ClassNotFoundException {
 		DataImport data = new DataImport();
 		int syscolnum = Integer.parseInt(SysColNum);
+		// arrays are counted from zero
+		syscolnum = syscolnum - 1;
 		String resultdir = data.createPgex(inputfilepath, SysCode,
 				syscolnum,
 				dbDirectory,
