@@ -25,11 +25,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bridgedb.BridgeDb;
 import org.bridgedb.DataSource;
-import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
-import org.bridgedb.IDMapperStack;
 import org.pathvisio.core.model.BatikImageExporter;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.DataNodeType;
@@ -42,7 +39,6 @@ import org.pathvisio.core.model.RasterImageExporter;
 import org.pathvisio.core.model.ShapeType;
 import org.pathvisio.core.model.StaticProperty;
 import org.pathvisio.core.preferences.PreferenceManager;
-import org.pathvisio.core.util.FileUtils;
 import org.pathvisio.core.view.MIMShapes;
 import org.pathvisio.htmlexport.plugin.HtmlExporter;
 
@@ -54,6 +50,7 @@ import org.pathvisio.htmlexport.plugin.HtmlExporter;
  */
 public class PathwayGpml {
 
+	DataImport dat = new DataImport();
 	private PathwayElement mappInfo = null;
 	private PathwayElement infoBox = null;
 	private PathwayElement pwyelement = null;
@@ -61,7 +58,8 @@ public class PathwayGpml {
 	private PathwayElement line = null;
 	static String separator = System.getProperty("file.separator");
 	static String newline = System.getProperty("line.separator");
-	static IDMapperStack loadedGdbs = new IDMapperStack();
+
+	// static IDMapperStack loadedGdbs = new IDMapperStack();
 
 	protected String createResultDir() {
 		final File homeDir = new File(System.getProperty("user.home"));
@@ -280,11 +278,11 @@ public class PathwayGpml {
 		File output = new File(resultdir + PathwayGpml.separator
 				+ pathway.getMappInfo().getMapInfoName());
 		output.mkdirs();
-		PathwayGpml path = new PathwayGpml();
-
+		dat.idmapperLoader(dbdirectory);
 		try {
 			HtmlExporter exporter = new HtmlExporter(
-					path.loadGdbs(dbdirectory), null, null);
+dat.getLoadedGdbs(), null,
+					null);
 			exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
 					output);
 		} catch (Exception e) {
@@ -535,28 +533,5 @@ public class PathwayGpml {
 		// save Pathway
 		savePathway(pathway, resultdir);
 
-	}
-
-	protected IDMapper loadGdb(String dbfile) throws ClassNotFoundException,
-	IDMapperException {
-		File dbFile = new File(dbfile);
-		Class.forName("org.bridgedb.rdb.IDMapperRdb");
-		IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
-		return gdb;
-	}
-
-	protected IDMapper loadGdbs(String dbDir) throws ClassNotFoundException,
-	IDMapperException {
-		File dbDirectory = new File(dbDir);
-		List<File> bridgeFiles = FileUtils
-				.getFiles(dbDirectory, "bridge", true);
-		if (bridgeFiles.size() != 0) {
-			for (File dbFile : bridgeFiles) {
-				Class.forName("org.bridgedb.rdb.IDMapperRdb");
-				IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
-				loadedGdbs.addIDMapper(gdb);
-			}
-		}
-		return loadedGdbs;
 	}
 }

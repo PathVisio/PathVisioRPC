@@ -32,6 +32,7 @@ import org.pathvisio.desktop.visualization.ColorSet;
  */
 public class GradientVis {
 
+	VizMaker visxml = new VizMaker();
 	/**
 	 * @param gcount
 	 *            integer indicating color set number
@@ -63,9 +64,10 @@ public class GradientVis {
 			vals[i] = Integer.parseInt(valus[i]);
 		}
 		for (int i = 0; i < cols.length; i = i + 1) {
-			java.lang.reflect.Field field = Class.forName("java.awt.Color")
-					.getField(cols[i]);
-			Color color = (Color) field.get(null);
+			// java.lang.reflect.Field field = Class.forName("java.awt.Color")
+			// .getField(cols[i]);
+			// Color color = (Color) field.get(null);
+			Color color = visxml.getColors(cols[i]);
 			cg.addColorValuePair(new ColorValuePair(color, vals[i]));
 		}
 		gcs.setGradient(cg);

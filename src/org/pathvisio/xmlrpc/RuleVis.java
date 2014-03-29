@@ -20,10 +20,9 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
 
-import org.bridgedb.IDMapperException;
+import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.data.DataException;
 import org.pathvisio.desktop.gex.GexManager;
-import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.desktop.visualization.ColorRule;
 import org.pathvisio.desktop.visualization.ColorSet;
 
@@ -35,12 +34,16 @@ import org.pathvisio.desktop.visualization.ColorSet;
  */
 public class RuleVis {
 
+	VizMaker visxml = new VizMaker();
 	// For reading expression dataset
+	/**
+	 * 
+	 */
 	public static final int TYPE_GEX = 1;
 
 	protected ColorSet createRule(int rcount, String gexFileName,
-			String colrNames, String expressions) throws IDMapperException,
-			SecurityException, NoSuchFieldException, ClassNotFoundException,
+			String expressions, String colrNames) throws SecurityException,
+			NoSuchFieldException, ClassNotFoundException,
 			IllegalArgumentException, IllegalAccessException, IOException,
 			DataException {
 
@@ -49,13 +52,14 @@ public class RuleVis {
 		String gexFile = gexFileName;
 		gex.setCurrentGex(gexFile, false);
 
-		
-		ColorSet rcs = new ColorSet("cs" + rcount);
-		ColorRule cr = new ColorRule(); 
 
-		java.lang.reflect.Field field = Class.forName("java.awt.Color")
-				.getField(colrNames);
-		Color color = (Color) field.get(null);
+		ColorSet rcs = new ColorSet("cs" + rcount);
+		ColorRule cr = new ColorRule();
+
+		// java.lang.reflect.Field field = Class.forName("java.awt.Color")
+		// .getField(colrNames);
+		// Color color = (Color) field.get(null);
+		Color color = visxml.getColors(colrNames);
 		cr.setColor(color);
 		List<String> al;
 		al = gex.getCurrentGex().getSampleNames();

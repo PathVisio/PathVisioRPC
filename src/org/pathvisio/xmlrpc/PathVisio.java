@@ -1,6 +1,6 @@
 // PathVisioRPC : the XML-RPC interface for PathVisio
-//PathVisio, a tool for data visualization and analysis using Biological Pathways
-// Copyright 2006-2013 BiGCaT Bioinformatics
+// PathVisio, a tool for data visualization and analysis using Biological Pathways
+// Copyright 2006-2014 BiGCaT Bioinformatics
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
 package org.pathvisio.xmlrpc;
 
 import java.io.File;
@@ -30,13 +31,15 @@ import org.pathvisio.data.DataException;
 
 /**
  * The Common handler class for all PathVisioRPC functions. This handler class
- * handles the RPC calls from the client programming language.
+ * handles the Remote Procedure Calls from the client programming language.
  * 
- * These functions can be accessed through any programming language with an
+ * These functions can be accessed through many programming languages with an
  * XML-RPC module or library. The way to call the function would vary according
  * to the language used. </br>Functions available in this version are : <li>
  * Creating and editing pathways</li> <li>Visualizing Data on pathways</li> <li>
  * Performing pathway statistics</li> <li>Exports pathways in various formats</li>
+ * <li>
+ * Help Functions</li>
  * 
  * @author anwesha
  * 
@@ -45,7 +48,13 @@ import org.pathvisio.data.DataException;
 public class PathVisio {
 
 	private static List<String> functionNames = new ArrayList<String>();
+
 	String error = " as result directory was not found/assigned.";
+
+	PathwayGpml path = new PathwayGpml();
+	DataImport dat = new DataImport();
+	VizMaker visxml = new VizMaker();
+	StatExport stat = new StatExport();
 
 	/**
 	 * Test the server client connection
@@ -74,10 +83,9 @@ public class PathVisio {
 	 * Function to display the different types of DataNodes that can be drawn
 	 * using PathVisio
 	 * 
-	 * @return List of types of DataNodes
+	 * @return List of types of DataNodes that can be drawn
 	 */
 	public List<String> getDataNodeTypes() {
-		PathwayGpml path = new PathwayGpml();
 		return path.getDatanodetypes();
 	}
 
@@ -85,10 +93,9 @@ public class PathVisio {
 	 * Function to display the types of basic interactions that can be drawn
 	 * using PathVisio
 	 * 
-	 * @return List of types of Basic Interactions
+	 * @return List of types of Basic Interactions that can be drawn
 	 */
 	public List<String> getInteractionTypes() {
-		PathwayGpml path = new PathwayGpml();
 		return path.getLinetypes();
 	}
 
@@ -96,10 +103,39 @@ public class PathVisio {
 	 * Functions to display the types of MIM interactions that can be drawn
 	 * using PathVisio
 	 * 
-	 * @return List of types of MIM Interactions
+	 * @return List of types of MIM Interactions that can be drawn
 	 */
 	public String[] getMIMInteractionTypes() {
 		return PathwayGpml.getMIMTypes();
+	}
+
+	/**
+	 * Function to display all loaded id mappers
+	 * 
+	 * @return List of loaded idmappers
+	 * @throws ClassNotFoundException
+	 */
+	public List<String> listMappers() throws ClassNotFoundException {
+		List<String> gdbs = dat.listLoadedGdbs();
+
+		if (gdbs.size() == 0) {
+			gdbs.add("No idmappers are loaded currently!");
+			gdbs.add("Download Bridge Files from Bridgedb.org and load them");
+		}
+		return gdbs;
+
+	}
+
+	/**
+	 * Function to delete all loaded idmappers
+	 * 
+	 * @return String "All mappers removed!"
+	 * @throws ClassNotFoundException
+	 */
+	public String removeMappers() throws ClassNotFoundException {
+		dat.removeLoadedGdbs();
+		return "All mappers removed!";
+
 	}
 
 	/**
@@ -116,6 +152,33 @@ public class PathVisio {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathway(pathwayfilepath);
 		return path.getGraphIDs(pathway, elementname);
+	}
+
+	/**
+	 * Function to set default colors
+	 * 
+	 * @param nC
+	 *            Color for when gene meets no set criteria
+	 * @param nD
+	 *            Color for when the data is not found
+	 * 
+	 * @return String "Colors set!"
+	 * 
+	 * @throws ConverterException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws NoSuchFieldException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * 
+	 */
+	public String setDefaultColours(String nC, String nD)
+			throws ConverterException, SecurityException,
+			IllegalArgumentException, NoSuchFieldException,
+			ClassNotFoundException, IllegalAccessException {
+		VizMaker visxml = new VizMaker();
+		visxml.setDefaultColors(nC, nD);
+		return "Colors set!";
 	}
 
 	/**
@@ -213,20 +276,20 @@ public class PathVisio {
 	}
 
 	/**
-	 * Adds a Line to a Pathway GPML saved on disk, connecting two DataNodes
-	 * specified by the names of the two DataNodes and saves the changed pathway
-	 * GPML file in the result directory
+	 * Adds an Interaction to a Pathway GPML saved on disk, connecting two
+	 * DataNodes specified by the names of the two DataNodes and saves the
+	 * changed pathway GPML file in the result directory
 	 * 
 	 * @param pathwayfilepath
 	 *            Absolute path of the pathway GPML file
 	 * @param linename
-	 *            Name of the Line
+	 *            Name of the Interaction
 	 * @param startdatanode
-	 *            Name of the DataNode where the Line starts
+	 *            Name of the DataNode where the Interaction starts
 	 * @param enddatanode
-	 *            Name of the DataNode where the Line ends
+	 *            Name of the DataNode where the Interaction ends
 	 * @param startarrowtype
-	 *            Type of the arrow at the start of the line
+	 *            Type of the arrow at the start of the Interaction
 	 * @param endarrowtype
 	 *            Type of the arrow at the end of the Line
 	 * @return A Unique GraphID for the Line added
@@ -520,6 +583,7 @@ public class PathVisio {
 	 *            System Code of the Database for identifier mapping
 	 * @param SysColNum
 	 *            Colum Number of the System Code column
+	 * @param IdColNum
 	 * @param dbDirectory
 	 *            Absolute path of the folder containing the annotation
 	 *            databases to be used
@@ -531,17 +595,16 @@ public class PathVisio {
 	 * @throws ClassNotFoundException
 	 */
 	public String importData(String inputfilepath, String SysCode,
-			String SysColNum, String dbDirectory,
+			String SysColNum, String IdColNum, String dbDirectory,
 			String resultdirectorypath) throws IOException, IDMapperException,
 			ClassNotFoundException {
-		DataImport data = new DataImport();
-		int syscolnum = Integer.parseInt(SysColNum);
+		// DataImport data = new DataImport();
+
 		// arrays are counted from zero
-		syscolnum = syscolnum - 1;
-		String resultdir = data.createPgex(inputfilepath, SysCode,
-				syscolnum,
-				dbDirectory,
-				resultdirectorypath);
+
+		String resultdir = dat.createPgex(inputfilepath, SysCode,
+				SysColNum,
+				IdColNum, dbDirectory, resultdirectorypath);
 		if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
 			resultdir = resultdir + this.error;
 		}
@@ -549,6 +612,45 @@ public class PathVisio {
 		return inputfile + " imported & " + inputfile + ".pgex created in"
 		+ resultdir;
 	}
+
+	/**
+	 * Imports tab delimited data and creates a PGEX file
+	 * 
+	 * @param inputfilepath
+	 *            Absolute path of the tab delimited input file
+	 * @param SysCode
+	 *            System Code of the Database for identifier mapping
+	 * @param SysColNum
+	 *            Column Number of the System Code column
+	 * @param IdColNum
+	 *            Column Number of the Identifier Column
+	 * @param dbDirectory
+	 *            Absolute path of the folder containing the annotation
+	 *            databases to be used
+	 * @param resultdirectorypath
+	 *            Absolute path of the directory to save results in
+	 * @return Creates a PGEX file in the result directory
+	 * @throws IOException
+	 * @throws IDMapperException
+	 * @throws ClassNotFoundException
+	 */
+	// public String importSingleData(String inputfilepath, String IdColNum,
+	// String SysCode, String SysColNum, String dbDirectory,
+	// String resultdirectorypath)
+	// throws IOException, IDMapperException, ClassNotFoundException {
+	// DataImport data = new DataImport();
+	//
+	// // arrays are counted from zero
+	//
+	// String resultdir = data.createPgexSingleBridge(inputfilepath, SysCode,
+	// SysColNum, IdColNum, dbDirectory, resultdirectorypath);
+	// if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
+	// resultdir = resultdir + this.error;
+	// }
+	// String inputfile = new File(inputfilepath).getName();
+	// return inputfile + " imported & " + inputfile + ".pgex created in"
+	// + resultdir;
+	// }
 
 	/**
 	 * Create a Visualization XML file for DataNodes Contains color gradients
@@ -567,9 +669,6 @@ public class PathVisio {
 	 *            Values corresponding to the colors of the color gradient the
 	 *            values for the same gradient should be separated by "," and
 	 *            values for the next gradient should be given after a ";"
-	 * @param rsample
-	 *            Samples on which the color rules should be applied samples
-	 *            should be separated with ";"
 	 * @param rcolors
 	 *            Colors for the color rules colors should be separated by a ";"
 	 * @param rexpressions
@@ -588,16 +687,69 @@ public class PathVisio {
 	 * @throws DataException
 	 */
 	public String createVisualization(String gexfilepath, String gsample,
-			String gcolors, String gvalues, String rsample, String rcolors,
-			String rexpressions) throws SecurityException,
-			IllegalArgumentException, IDMapperException, ConverterException,
-			IOException, NoSuchFieldException, ClassNotFoundException,
-			IllegalAccessException, DataException {
-		VisualizationXml visxml = new VisualizationXml();
+			String gcolors, String gvalues, String rexpressions, String rcolors)
+					throws SecurityException,
+					IllegalArgumentException, IDMapperException, ConverterException,
+					IOException, NoSuchFieldException, ClassNotFoundException,
+					IllegalAccessException, DataException {
+		VizMaker visxml = new VizMaker();
 		visxml.createVisualizationNode(gexfilepath, gsample, gcolors, gvalues,
-				rsample, rcolors, rexpressions);
+				rexpressions, rcolors);
 		return gexfilepath + ".xml-visualization file created!";
 	}
+
+	/**
+	 * Create a Visualization XML file for DataNodes Contains color gradients
+	 * and rules
+	 * 
+	 * @param gexfilepath
+	 *            Absolute path of the PGEX file
+	 * @param gsample
+	 *            Samples on which the color gradients should be applied samples
+	 *            should be separated by ";"
+	 * @param gcolors
+	 *            Colors for the color gradients the colors for the same
+	 *            gradient should be separated by "," and colors for the next
+	 *            gradient should be given after a ";" Colors should be in
+	 *            hexadecimal format
+	 * @param gvalues
+	 *            Values corresponding to the colors of the color gradient the
+	 *            values for the same gradient should be separated by "," and
+	 *            values for the next gradient should be given after a ";"
+	 * @param rsample
+	 *            Samples on which the color rules should be applied samples
+	 *            should be separated with ";"
+	 * @param rcolors
+	 *            Colors for the color rules colors should be separated by a ";"
+	 *            Colors should be in hexadecimal format
+	 * @param rexpressions
+	 *            Expressions for the color rules expressions should be
+	 *            separated with ";"
+	 * @return An XML file containing the visualization is saved in the same
+	 *         directory as the PGEX file
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IDMapperException
+	 * @throws ConverterException
+	 * @throws IOException
+	 * @throws NoSuchFieldException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws DataException
+	 */
+	// public String createVisualizationByHex(String gexfilepath, String
+	// gsample,
+	// String gcolors, String gvalues, String rsample, String rcolors,
+	// String rexpressions) throws SecurityException,
+	// IllegalArgumentException, IDMapperException, ConverterException,
+	// IOException, NoSuchFieldException, ClassNotFoundException,
+	// IllegalAccessException, DataException {
+	// VizMaker visxml = new VizMaker();
+	// visxml.createVisualizationNodeByHex(gexfilepath, gsample, gcolors,
+	// gvalues,
+	// rsample, rcolors, rexpressions);
+	// return gexfilepath + ".xml-visualization file created!";
+	// }
 
 	/**
 	 * Data is visualized on the pathway GPML file saved on disk and the results
@@ -860,7 +1012,11 @@ public class PathVisio {
 	}
 
 	/**
-	 * Calculate Pathway statistics - overrepresentation analysis
+	 * Calculate Pathway statistics - over representation analysis And exports
+	 * results as a hyperlinked html page containing a list of all the pathways
+	 * ranked according to their z score, a folder of images and a folder
+	 * containing backpages
+	 * 
 	 * 
 	 * @param pathwaydirectory
 	 *            Absolute path of the directory which contains the pathways
@@ -881,8 +1037,8 @@ public class PathVisio {
 			String resultdirectory) {
 		StatExport stat = new StatExport();
 		String resultDir = "";
-
 		try {
+			dat.removeLoadedGdbs();
 			resultDir = stat.calculatePathwayStatistics(gexfilepath,
 					dbdirectory, pathwaydirectory, criteria, resultdirectory);
 		} catch (Exception e) {
@@ -895,5 +1051,78 @@ public class PathVisio {
 
 		return "Results exported to " + resultDir;
 	}
+
+	/**
+	 * Exports a list of Pathways ranked according to Z score
+	 * 
+	 * @param pathwaydirectory
+	 *            Absolute path of the directory which contains the pathways
+	 * @param gexfilepath
+	 *            Absolute path of the PGEX file
+	 * @param dbdirectory
+	 *            Absolute path of the folder containing the annotation
+	 *            databases
+	 * @param criteria
+	 *            The criteria based on which the Zscore should be calculated
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the results should be
+	 *            saved
+	 * @return String stating the result directory
+	 */
+	public String getPathwayStatList(String pathwaydirectory,
+			String gexfilepath, String dbdirectory, String criteria,
+			String resultdirectory) {
+		StatExport stat = new StatExport();
+		String resultDir = "";
+		try {
+			dat.removeLoadedGdbs();
+			resultDir = stat.getPathwayStatList(gexfilepath,
+					dbdirectory, pathwaydirectory, criteria, resultdirectory);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+			resultDir = resultDir + this.error;
+		}
+
+		return "Pathway Statistics List exported to " + resultDir;
+	}
+
+	/**
+	 * Calculate Pathway statistics - overrepresentation analysis
+	 * 
+	 * @param pathwaydirectory
+	 *            Absolute path of the directory which contains the pathways
+	 * @param gexfilepath
+	 *            Absolute path of the PGEX file
+	 * @param dbfilepath
+	 *            Absolute path of the bridge file
+	 * @param criteria
+	 *            The criteria based on which the Zscore should be calculated
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the results should be
+	 *            saved
+	 * @return String stating that results have been exported
+	 */
+	// public String calculatePathwayStatisticsByBridge(String pathwaydirectory,
+	// String gexfilepath, String dbfilepath, String criteria,
+	// String resultdirectory) {
+	// // StatExport stat = new StatExport();
+	// String resultDir = "";
+	// try {
+	// path.removeLoadedGdbs();
+	// resultDir = stat.calculatePathwayStatisticsByBridge(gexfilepath,
+	// dbfilepath, pathwaydirectory, criteria, resultdirectory);
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+	// resultDir = resultDir + this.error;
+	// }
+	//
+	// return "Results exported to " + resultDir;
+	// }
 
 }

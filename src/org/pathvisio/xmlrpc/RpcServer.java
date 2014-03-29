@@ -26,7 +26,7 @@ import org.apache.xmlrpc.webserver.WebServer;
 
 /**
  * Creates a server and a xml server, assigns the handler and starts the server.
- * This could be always started using the same port (default 7777) or a port can
+ * This could always be started using the same port (default 7777) or a port can
  * given as an argument. The port is returned in order to call the handlers.
  * 
  * @author anwesha

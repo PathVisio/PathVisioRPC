@@ -19,10 +19,16 @@ package org.pathvisio.xmlrpc;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bridgedb.BridgeDb;
 import org.bridgedb.DataSource;
+import org.bridgedb.IDMapper;
 import org.bridgedb.IDMapperException;
+import org.bridgedb.IDMapperStack;
 import org.pathvisio.core.preferences.PreferenceManager;
+import org.pathvisio.core.util.FileUtils;
 import org.pathvisio.desktop.gex.GexManager;
 import org.pathvisio.gexplugin.GexTxtImporter;
 import org.pathvisio.gexplugin.ImportInformation;
@@ -36,6 +42,8 @@ import org.pathvisio.gexplugin.ImportInformation;
 
 public class DataImport {
 
+	private static IDMapperStack loadedGdbs = new IDMapperStack();
+
 	/**
 	 * @param inputFile
 	 *            full path of file containing data
@@ -44,14 +52,14 @@ public class DataImport {
 	 *            be used
 	 * @param resultdir
 	 *            full path of directory where the results saved
+	 * @param resultdirectorypath
 	 * @return full path of directory where results are saved
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 * @throws IDMapperException
 	 */
 	protected String createPgex(String inputFile, String syscode,
-			int SysColNum,
-			String dbDir, String resultdir)
+			String sysColNum, String idColNum, String dbDir, String resultdir)
 					throws IOException, ClassNotFoundException, IDMapperException {
 		PreferenceManager.init();
 		GexManager gexManager = new GexManager();
@@ -64,27 +72,27 @@ public class DataImport {
 				resultdir = path.createResultDir();
 			}
 		}
+
 		info.setTxtFile(new File(inputFile));
 		if (syscode != null && !syscode.isEmpty()) {
 			info.setSyscodeFixed(true);
 			info.setDataSource(DataSource.getBySystemCode(syscode));
 		} else {
+			int syscolnum = Integer.parseInt(sysColNum);
+			syscolnum = syscolnum - 1;
+			int idcolnum = Integer.parseInt(idColNum);
+			idcolnum = idcolnum - 1;
 			info.setSyscodeFixed(false);
-			info.setSysodeColumn(SysColNum);
+			info.setSysodeColumn(syscolnum);
+			info.setIdColumn(idcolnum);
 		}
 
 		String inputfile = new File(inputFile).getName();
 		info.setGexName(resultdir + PathwayGpml.separator + inputfile);
 
-		path.loadGdbs(dbDir);
-		// System.out.println("code\t" + syscode);
-		// System.out.println("syscode column mine\t" + SysColNum);
-		// System.out.println("syscode column pro\t" + info.getSyscodeColumn());
-		// System.out.println(PathwayGpml.loadedGdbs.getMappers().toString()+PathwayGpml.loadedGdbs.isConnected());
+		idmapperLoader(dbDir);
 
-
-		GexTxtImporter.importFromTxt(info, null, PathwayGpml.loadedGdbs,
-				gexManager);
+		GexTxtImporter.importFromTxt(info, null, getLoadedGdbs(), gexManager);
 
 		FileWriter fw = new FileWriter(resultdir + PathwayGpml.separator
 				+ inputfile + "error.txt");
@@ -95,5 +103,91 @@ public class DataImport {
 		fw.write("Mapped ok: " + info.getRowsMapped() + PathwayGpml.newline);
 		fw.close();
 		return resultdir;
+	}
+
+	protected IDMapper loadGdb(String dbfile) throws ClassNotFoundException,
+	IDMapperException {
+
+		File dbFile = new File(dbfile);
+		Class.forName("org.bridgedb.rdb.IDMapperRdb");
+		IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
+		getLoadedGdbs().addIDMapper(gdb);
+		return getLoadedGdbs();
+	}
+
+	protected List<String> listLoadedGdbs() throws ClassNotFoundException {
+		Class.forName("org.bridgedb.rdb.IDMapperRdb");
+		List<String> gdbList = new ArrayList<String>();
+		for (IDMapper gdb : getLoadedGdbs().getMappers()) {
+			gdbList.add(gdb.toString());
+		}
+
+		return gdbList;
+	}
+
+	protected void removeLoadedGdbs() throws ClassNotFoundException {
+		Class.forName("org.bridgedb.rdb.IDMapperRdb");
+		for (IDMapper gdb : getLoadedGdbs().getMappers()) {
+			getLoadedGdbs().removeIDMapper(gdb);
+		}
+
+	}
+
+	protected void removeGdb(String dbfile) throws ClassNotFoundException,
+	IDMapperException {
+
+		File dbFile = new File(dbfile);
+		Class.forName("org.bridgedb.rdb.IDMapperRdb");
+		IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
+		getLoadedGdbs().removeIDMapper(gdb);
+
+	}
+
+	protected IDMapper loadGdbs(String dbDir) throws ClassNotFoundException,
+	IDMapperException {
+		File dbDirectory = new File(dbDir);
+		List<File> bridgeFiles = FileUtils
+				.getFiles(dbDirectory, "bridge", true);
+		if (bridgeFiles.size() != 0) {
+			for (File dbFile : bridgeFiles) {
+				Class.forName("org.bridgedb.rdb.IDMapperRdb");
+				IDMapper gdb = BridgeDb.connect("idmapper-pgdb:" + dbFile);
+				getLoadedGdbs().addIDMapper(gdb);
+			}
+		}
+		return getLoadedGdbs();
+	}
+
+	protected void idmapperLoader(String dbDir) {
+		File dbFile = new File(dbDir);
+		if (dbFile.exists()) {
+			try {
+				if (dbFile.isDirectory()) {
+					loadGdbs(dbDir);
+				} else {
+					loadGdb(dbDir);
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IDMapperException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * @return the loadedGdbs
+	 */
+	public static IDMapperStack getLoadedGdbs() {
+		return loadedGdbs;
+	}
+
+	/**
+	 * @param loadedGdbs the loadedGdbs to set
+	 */
+	public static void setLoadedGdbs(IDMapperStack loadedGdbs) {
+		DataImport.loadedGdbs = loadedGdbs;
 	}
 }
