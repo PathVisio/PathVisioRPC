@@ -25,18 +25,14 @@ import org.bridgedb.bio.BioDataSource;
 import org.bridgedb.rdb.construct.DataDerby;
 import org.pathvisio.core.Engine;
 import org.pathvisio.core.debug.Logger;
-import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.util.FileUtils;
 import org.pathvisio.desktop.PvDesktop;
-import org.pathvisio.desktop.gex.GexManager;
 import org.pathvisio.desktop.gex.SimpleGex;
 import org.pathvisio.desktop.visualization.Criterion;
 import org.pathvisio.desktop.visualization.Visualization;
-import org.pathvisio.desktop.visualization.VisualizationManager;
 import org.pathvisio.gexplugin.GexPlugin;
 import org.pathvisio.gui.SwingEngine;
-import org.pathvisio.htmlexport.plugin.HtmlExporter;
 import org.pathvisio.htmlexport.statistics.StatisticsExporter;
 import org.pathvisio.statistics.Column;
 import org.pathvisio.statistics.StatisticsPathwayResult;
@@ -55,56 +51,12 @@ import org.pathvisio.visualization.plugins.VisualizationPlugin;
  * 
  */
 
+@SuppressWarnings("deprecation")
 public class StatExport {
 
 	PathwayGpml path = new PathwayGpml();
 	DataImport dat = new DataImport();
 
-	protected void visualizeData(String gexname, String dbDir, Pathway pathway,
-			File output) throws Exception {
-
-		File gexfile = new File(gexname);
-
-		String visName = "Visualization";
-		PreferenceManager.init();
-		BioDataSource.init();
-
-		dat.idmapperLoader(dbDir);
-		// path.loadGdbs(dbDir);
-
-		Engine engine = new Engine();
-		PvDesktop pvDesktop = new PvDesktop(new SwingEngine(engine), null);
-
-		// start the main plugins visualization, gex and statistics
-		VisualizationPlugin visplugin = new VisualizationPlugin();
-		visplugin.init(pvDesktop);
-
-		GexPlugin gexplugin = new GexPlugin();
-		gexplugin.init(pvDesktop);
-
-		StatisticsPlugin statplugin = new StatisticsPlugin();
-		statplugin.init(pvDesktop);
-
-		SimpleGex gex = new SimpleGex("" + gexfile, false, new DataDerby());
-
-		pvDesktop.getGexManager().setCurrentGex(gex);
-		GexManager gexMgr = pvDesktop.getGexManager();
-		VisualizationManager visMgr = pvDesktop.getVisualizationManager();
-
-		for (Visualization v : pvDesktop.getVisualizationManager()
-				.getVisualizations()) {
-			if (v.getName().equals(visName)) {
-				pvDesktop.getVisualizationManager().setActiveVisualization(v);
-			}
-		}
-
-		gexMgr.getCachedData().setMapper(dat.getLoadedGdbs());
-
-		HtmlExporter exporter = new HtmlExporter(dat.getLoadedGdbs(),
-				visMgr, gexMgr);
-		exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
-				output);
-	}
 
 	/**
 	 * Call locally from R or GenePattern
@@ -119,103 +71,20 @@ public class StatExport {
 	 */
 	protected String calculatePathwayStatistics(String gexfile, String dbDir,
 			String pathdir, String exprz, String resultdir) throws Exception {
-		return statHtml(gexfile, dbDir, pathdir, exprz, resultdir, false, "");
+		String resultDir = statExportHtml(gexfile, dbDir, pathdir, exprz,
+				resultdir, false, "");
+		return resultDir;
 	}
 
-	// protected String calculatePathwayStatisticsByBridge(String gexfile,
-	// String dbfile, String pathwaydir, String exprZ, String resultdir) {
-	// PathwayGpml path = new PathwayGpml();
-	// if (resultdir.length() == 0) {
-	// resultdir = path.createResultDir();
-	// } else {
-	// if (!(new File(resultdir).exists())) {
-	// resultdir = path.createResultDir();
-	// }
-	// }
-	//
-	// File gexFile = new File(gexfile);
-	// File inPath = new File(pathwaydir);
-	// File outPath = new File(resultdir);
-	// String visName = "Visualization";
-	// PreferenceManager.init();
-	// BioDataSource.init();
-	//
-	// try {
-	// List<File> gpmlFiles = FileUtils.getFiles(inPath, "gpml", true);
-	// if (gpmlFiles.size() == 0) {
-	// Logger.log.error("No GPML files found in " + inPath);
-	// }
-	//
-	// path.loadGdb(dbfile);
-	//
-	// Engine engine = new Engine();
-	// PvDesktop pvDesktop = new PvDesktop(new SwingEngine(engine), null);
-	//
-	// VisualizationPlugin visPlugin = new VisualizationPlugin();
-	// visPlugin.init(pvDesktop);
-	//
-	// GexPlugin gexPlugin = new GexPlugin();
-	// gexPlugin.init(pvDesktop);
-	//
-	// StatisticsPlugin plugin = new StatisticsPlugin();
-	// plugin.init(pvDesktop);
-	//
-	// SimpleGex gex = new SimpleGex("" + gexFile, false, new DataDerby());
-	// pvDesktop.getGexManager().setCurrentGex(gex);
-	//
-	// for (Visualization v : pvDesktop.getVisualizationManager()
-	// .getVisualizations()) {
-	// if (v.getName().equals(visName)) {
-	// pvDesktop.getVisualizationManager().setActiveVisualization(
-	// v);
-	// }
-	// }
-	//
-	// Criterion criteria = new Criterion();
-	// criteria.setExpression(exprZ, gex.getSampleNames());
-	//
-	// ZScoreCalculator zsc = new ZScoreCalculator(criteria, inPath,
-	// pvDesktop.getGexManager().getCachedData(),
-	// PathwayGpml.loadedGdbs, null);
-	// StatisticsResult result = zsc.calculateMappFinder();
-	//
-	// StatisticsExporter exporter = new StatisticsExporter(
-	// PathwayGpml.loadedGdbs,
-	// pvDesktop.getVisualizationManager(), pvDesktop
-	// .getGexManager().getCurrentGex());
-	// exporter.export(outPath, result, pvDesktop
-	// .getVisualizationManager().getActiveVisualization(), true,
-	// "www.arrayanalysis.org", null);
-	// }
-	//
-	// catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// return resultdir;
-	// }
-
-	protected String getPathwayStatList(String gexfile,
+	protected StatisticsResult getPathwayStatList(String gexfile,
 			String dbfile,
 			String pathwaydir, String exprZ, String resultdir) {
-		// PathwayGpml path = new PathwayGpml();
-
-		if (resultdir.length() == 0) {
-			resultdir = path.createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = path.createResultDir();
-			}
-		}
-
+		resultdir = path.checkResultDir(resultdir);
 		File gexFile = new File(gexfile);
 		File inPath = new File(pathwaydir);
-		File outPath = new File(resultdir + File.separator
-				+ "PathwayStatList.txt");
-
 		PreferenceManager.init();
 		BioDataSource.init();
-
+		StatisticsResult result = null;
 		try {
 			List<File> gpmlFiles = FileUtils.getFiles(inPath, "gpml", true);
 			if (gpmlFiles.size() == 0) {
@@ -223,10 +92,8 @@ public class StatExport {
 			}
 
 			dat.idmapperLoader(dbfile);
-
 			Engine engine = new Engine();
 			PvDesktop pvDesktop = new PvDesktop(new SwingEngine(engine), null);
-
 
 			GexPlugin gexPlugin = new GexPlugin();
 			gexPlugin.init(pvDesktop);
@@ -242,21 +109,17 @@ public class StatExport {
 
 			Criterion criteria = new Criterion();
 			criteria.setExpression(exprZ, gex.getSampleNames());
-
 			ZScoreCalculator zsc = new ZScoreCalculator(criteria, inPath,
 					pvDesktop.getGexManager().getCachedData(),
-					dat.getLoadedGdbs(),
-					null);
-
-			StatisticsResult result = zsc.calculateMappFinder();
-			createStatFile(result, outPath);
+					dat.getLoadedGdbs(), null);
+			result = zsc.calculateMappFinder();
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return resultdir;
+		return result;
 	}
 
 	/**
@@ -272,17 +135,9 @@ public class StatExport {
 	 * @return
 	 * @throws Exception
 	 */
-	protected String statHtml(String gexfile, String dbDir, String pathdir,
-			String exprz, String resultdir, boolean fromWeb, String webAddress) {
-
-		// PathwayGpml path = new PathwayGpml();
-		if (resultdir.length() == 0) {
-			resultdir = path.createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = path.createResultDir();
-			}
-		}
+	protected String statExportHtml(String gexfile, String dbDir,
+			String pathdir, String exprz, String resultdir, boolean fromWeb,
+			String webAddress) {
 
 		File gexFile = new File(gexfile);
 		File inPath = new File(pathdir);
@@ -328,14 +183,12 @@ public class StatExport {
 
 			ZScoreCalculator zsc = new ZScoreCalculator(criteria, inPath,
 					pvDesktop.getGexManager().getCachedData(),
-					dat.getLoadedGdbs(),
-					null);
+					dat.getLoadedGdbs(), null);
 			StatisticsResult result = zsc.calculateMappFinder();
 
 			StatisticsExporter exporter = new StatisticsExporter(
-					dat.getLoadedGdbs(),
-					pvDesktop.getVisualizationManager(), pvDesktop
-					.getGexManager().getCurrentGex());
+					dat.getLoadedGdbs(), pvDesktop.getVisualizationManager(),
+					pvDesktop.getGexManager().getCurrentGex());
 			exporter.export(outPath, result, pvDesktop
 					.getVisualizationManager().getActiveVisualization(),
 					fromWeb, webAddress, null);
@@ -348,11 +201,13 @@ public class StatExport {
 		return resultdir;
 	}
 
-	protected void createStatFile(StatisticsResult result, File file) {
+	protected String createStatFile(StatisticsResult result, String resultdir) {
+		File outPath = new File(resultdir + File.separator
+				+ "PathwayStatList.txt");
 		try {
-			file.createNewFile();
+			outPath.createNewFile();
 
-			FileWriter writer = new FileWriter(file);
+			FileWriter writer = new FileWriter(outPath);
 			writer.write("Pathway" + "\t" + "Positive[r]" + "\t"
 					+ "Measured[n]" + "\t" + "Total" + "\t" + "Z Score"
 					+ "\n");
@@ -368,25 +223,7 @@ public class StatExport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		return resultdir;
 	}
 
-	// protected void idmapperLoader(String dbDir) {
-	// File dbFile = new File(dbDir);
-	// if (dbFile.exists()) {
-	// try {
-	// if (dbFile.isDirectory()) {
-	// path.loadGdbs(dbDir);
-	// } else {
-	// path.loadGdb(dbDir);
-	// }
-	// } catch (ClassNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IDMapperException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	// }
 }

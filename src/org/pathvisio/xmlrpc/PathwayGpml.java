@@ -19,6 +19,7 @@ package org.pathvisio.xmlrpc;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bridgedb.DataSource;
-import org.bridgedb.IDMapperException;
 import org.pathvisio.core.model.BatikImageExporter;
 import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.DataNodeType;
@@ -40,7 +40,6 @@ import org.pathvisio.core.model.ShapeType;
 import org.pathvisio.core.model.StaticProperty;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.core.view.MIMShapes;
-import org.pathvisio.htmlexport.plugin.HtmlExporter;
 
 /**
  * Functions to create, edit and export Biological pathways and Add, annotate
@@ -50,7 +49,7 @@ import org.pathvisio.htmlexport.plugin.HtmlExporter;
  */
 public class PathwayGpml {
 
-	DataImport dat = new DataImport();
+	// DataImport dat = new DataImport();
 	private PathwayElement mappInfo = null;
 	private PathwayElement infoBox = null;
 	private PathwayElement pwyelement = null;
@@ -61,16 +60,33 @@ public class PathwayGpml {
 
 	// static IDMapperStack loadedGdbs = new IDMapperStack();
 
-	protected String createResultDir() {
+	protected String checkResultDir(String resultdir) {
 		final File homeDir = new File(System.getProperty("user.home"));
-		final File resultDir = new File(homeDir, "PathVisioRPC-Results");
-		boolean exists = resultDir.exists();
-		if (!exists) {
-			new File(homeDir, "PathVisioRPC-Results").mkdir();
+		File resultDir = new File(homeDir, "PathVisioRPC-Results");
+		if (resultdir.length() == 0) {
+			resultDir = new File(homeDir, "PathVisioRPC-Results");
+			if (!(resultDir.exists())) {
+				resultDir.mkdir();
+			}
+		} else {
+			resultDir = new File(resultdir);
+			if (!(resultDir.exists())) {
+				resultDir.mkdir();
+			}
 		}
-
 		return resultDir.getAbsolutePath();
 	}
+
+	// protected String createResultDir() {
+	// final File homeDir = new File(System.getProperty("user.home"));
+	// final File resultDir = new File(homeDir, "PathVisioRPC-Results");
+	// boolean exists = resultDir.exists();
+	// if (!exists) {
+	// new File(homeDir, "PathVisioRPC-Results").mkdir();
+	// }
+	//
+	// return resultDir.getAbsolutePath();
+	// }
 
 	protected String createPathway(String pathwayname, String pathwayauthor,
 			String organism, String resultdir) {
@@ -86,13 +102,9 @@ public class PathwayGpml {
 
 		this.infoBox = PathwayElement.createPathwayElement(ObjectType.INFOBOX);
 		pathway.add(this.infoBox);
-		if (resultdir.length() == 0) {
-			resultdir = createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = createResultDir();
-			}
-		}
+
+		resultdir = checkResultDir(resultdir);
+
 		File pathwayfile = new File(resultdir + separator + pathwayname
 				+ ".gpml");
 		try {
@@ -178,13 +190,8 @@ public class PathwayGpml {
 	}
 
 	protected void savePathway(Pathway pathway, String resultdir) {
-		if (resultdir.length() == 0) {
-			resultdir = createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = createResultDir();
-			}
-		}
+
+		resultdir = checkResultDir(resultdir);
 		pathway.fixReferences();
 
 		try {
@@ -195,16 +202,10 @@ public class PathwayGpml {
 	}
 
 	protected String exportPathway(Pathway pathway, String filetype,
-			String resultdir) throws ConverterException, IOException,
-			IDMapperException {
+			String resultdir) {
 		PreferenceManager.init();
-		if (resultdir.length() == 0) {
-			resultdir = createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = createResultDir();
-			}
-		}
+
+		resultdir = checkResultDir(resultdir);
 		String pathwayname = pathway.getMappInfo().getMapInfoName();
 		File pathwayfile = new File(resultdir + separator + pathwayname + "."
 				+ filetype);
@@ -212,15 +213,25 @@ public class PathwayGpml {
 		return resultdir;
 	}
 
-	protected byte[] exportPathwayByte(Pathway pathway, String filetype)
-			throws ConverterException, IOException, IDMapperException {
+	protected byte[] exportPathwayByte(Pathway pathway, String filetype) {
 		PreferenceManager.init();
 		File pathwayfile = new File(pathway.getMappInfo().getMapInfoName()
 				+ "." + filetype);
 		createPathwayImage(pathway, filetype, pathwayfile);
-		FileInputStream fin = new FileInputStream(pathwayfile);
+		FileInputStream fin;
 		byte fileContent[] = new byte[(int) pathwayfile.length()];
-		fin.read(fileContent);
+		try {
+
+			fin = new FileInputStream(pathwayfile);
+			fin.read(fileContent);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		pathwayfile.delete();
 		return fileContent;
 	}
@@ -265,32 +276,27 @@ public class PathwayGpml {
 
 	}
 
-	protected String createPathwayHtml(Pathway pathway, String dbdirectory,
-			String resultdir) {
-		PreferenceManager.init();
-		if (resultdir.length() == 0) {
-			resultdir = createResultDir();
-		} else {
-			if (!(new File(resultdir).exists())) {
-				resultdir = createResultDir();
-			}
-		}
-		File output = new File(resultdir + PathwayGpml.separator
-				+ pathway.getMappInfo().getMapInfoName());
-		output.mkdirs();
-		dat.idmapperLoader(dbdirectory);
-		try {
-			HtmlExporter exporter = new HtmlExporter(
-dat.getLoadedGdbs(), null,
-					null);
-			exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
-					output);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return resultdir;
-	}
+	// protected String createPathwayHtml(Pathway pathway, String dbdirectory,
+	// String resultdir) {
+	// PreferenceManager.init();
+	//
+	// resultdir = checkResultDir(resultdir);
+	// File output = new File(resultdir + PathwayGpml.separator
+	// + pathway.getMappInfo().getMapInfoName());
+	// output.mkdirs();
+	// dat.idmapperLoader(dbdirectory);
+	// try {
+	// HtmlExporter exporter = new HtmlExporter(
+	// DataImport.getLoadedGdbs(), null,
+	// null);
+	// exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
+	// output);
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// return resultdir;
+	// }
 
 	protected void datanodeLayout(Pathway pathway) {
 		int i = 1;
@@ -364,7 +370,7 @@ dat.getLoadedGdbs(), null,
 
 	protected String addLineByID(Pathway pathway, String linename,
 			String node1, String node2, String starttype, String endtype,
-			String resultdir) throws ConverterException {
+			String resultdir) {
 
 		// create new Line
 		line = PathwayElement.createPathwayElement(ObjectType.LINE);
@@ -522,7 +528,7 @@ dat.getLoadedGdbs(), null,
 	}
 
 	protected void removeElementById(Pathway pathway, String elementid,
-			String resultdir) throws ConverterException {
+			String resultdir) {
 
 		// get element
 		pwyelement = pathway.getElementById(elementid);

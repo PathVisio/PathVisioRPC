@@ -28,6 +28,7 @@ import org.pathvisio.core.model.ConverterException;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.data.DataException;
+import org.pathvisio.statistics.StatisticsResult;
 
 /**
  * The Common handler class for all PathVisioRPC functions. This handler class
@@ -53,7 +54,7 @@ public class PathVisio {
 
 	PathwayGpml path = new PathwayGpml();
 	DataImport dat = new DataImport();
-	VizMaker visxml = new VizMaker();
+	VizMaker vis = new VizMaker();
 	StatExport stat = new StatExport();
 
 	/**
@@ -115,7 +116,7 @@ public class PathVisio {
 	 * @return List of loaded idmappers
 	 * @throws ClassNotFoundException
 	 */
-	public List<String> listMappers() throws ClassNotFoundException {
+	public List<String> listMappers() {
 		List<String> gdbs = dat.listLoadedGdbs();
 
 		if (gdbs.size() == 0) {
@@ -123,6 +124,18 @@ public class PathVisio {
 			gdbs.add("Download Bridge Files from Bridgedb.org and load them");
 		}
 		return gdbs;
+
+	}
+
+	/**
+	 * Function to add loaded id mappers
+	 * 
+	 * @return List of loaded idmappers
+	 * @throws ClassNotFoundException
+	 */
+	public String addMappers(String dbFile) {
+		dat.idmapperLoader(dbFile);
+		return "Mappers loaded:"+ listMappers();
 
 	}
 
@@ -158,9 +171,12 @@ public class PathVisio {
 	 * Function to set default colors
 	 * 
 	 * @param nC
-	 *            Color for when gene meets no set criteria
+	 *            Color for when gene meets no set criteria Could be name of
+	 *            colour as string e.g. "white" or Hex colour code e.g.
+	 *            "#FFFFFF"
 	 * @param nD
-	 *            Color for when the data is not found
+	 *            Color for when the data is not found Could be name of colour
+	 *            as string e.g. "grey" or Hex colour code e.g. "#B2B2B2"
 	 * 
 	 * @return String "Colors set!"
 	 * 
@@ -176,8 +192,7 @@ public class PathVisio {
 			throws ConverterException, SecurityException,
 			IllegalArgumentException, NoSuchFieldException,
 			ClassNotFoundException, IllegalAccessException {
-		VizMaker visxml = new VizMaker();
-		visxml.setDefaultColors(nC, nD);
+		vis.setDefaultColors(nC, nD);
 		return "Colors set!";
 	}
 
@@ -584,73 +599,38 @@ public class PathVisio {
 	 * @param SysColNum
 	 *            Colum Number of the System Code column
 	 * @param IdColNum
+	 * @param gexFileName
+	 *            Name of the the gexFile
 	 * @param dbDirectory
 	 *            Absolute path of the folder containing the annotation
 	 *            databases to be used
 	 * @param resultdirectorypath
 	 *            Absolute path of the directory to save results in
 	 * @return Creates a PGEX file in the result directory
-	 * @throws IOException
-	 * @throws IDMapperException
-	 * @throws ClassNotFoundException
 	 */
-	public String importData(String inputfilepath, String SysCode,
-			String SysColNum, String IdColNum, String dbDirectory,
-			String resultdirectorypath) throws IOException, IDMapperException,
-			ClassNotFoundException {
-		// DataImport data = new DataImport();
+	public String importData(String inputfilepath, String IdColNum,
+			String SysCode, String SysColNum, String gexFileName,
+			String dbDirectory, String resultdirectorypath) {
+		String resultFileName = "";
+		System.out.println("File to import:" + inputfilepath);
+		System.out.println("Id Column Number: " + IdColNum);
+		System.out.println("System Code: " + SysCode);
+		System.out.println("System Col Num: " + SysColNum);
+		System.out.println("Gex File Name: " + gexFileName);
 
-		// arrays are counted from zero
-
-		String resultdir = dat.createPgex(inputfilepath, SysCode,
-				SysColNum,
-				IdColNum, dbDirectory, resultdirectorypath);
+		String resultdir = dat.createPgex(inputfilepath, IdColNum, SysCode,
+				SysColNum, gexFileName, dbDirectory, resultdirectorypath);
 		if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
 			resultdir = resultdir + this.error;
 		}
-		String inputfile = new File(inputfilepath).getName();
-		return inputfile + " imported & " + inputfile + ".pgex created in"
-		+ resultdir;
+		if (!gexFileName.isEmpty()) {
+			resultFileName = resultdir + PathwayGpml.separator + gexFileName;
+		} else {
+			resultFileName = resultdir + PathwayGpml.separator
+					+ new File(inputfilepath).getName();
+		}
+		return new File(resultFileName + ".pgex").getAbsolutePath();
 	}
-
-	/**
-	 * Imports tab delimited data and creates a PGEX file
-	 * 
-	 * @param inputfilepath
-	 *            Absolute path of the tab delimited input file
-	 * @param SysCode
-	 *            System Code of the Database for identifier mapping
-	 * @param SysColNum
-	 *            Column Number of the System Code column
-	 * @param IdColNum
-	 *            Column Number of the Identifier Column
-	 * @param dbDirectory
-	 *            Absolute path of the folder containing the annotation
-	 *            databases to be used
-	 * @param resultdirectorypath
-	 *            Absolute path of the directory to save results in
-	 * @return Creates a PGEX file in the result directory
-	 * @throws IOException
-	 * @throws IDMapperException
-	 * @throws ClassNotFoundException
-	 */
-	// public String importSingleData(String inputfilepath, String IdColNum,
-	// String SysCode, String SysColNum, String dbDirectory,
-	// String resultdirectorypath)
-	// throws IOException, IDMapperException, ClassNotFoundException {
-	// DataImport data = new DataImport();
-	//
-	// // arrays are counted from zero
-	//
-	// String resultdir = data.createPgexSingleBridge(inputfilepath, SysCode,
-	// SysColNum, IdColNum, dbDirectory, resultdirectorypath);
-	// if (!(resultdir.equalsIgnoreCase(resultdirectorypath))) {
-	// resultdir = resultdir + this.error;
-	// }
-	// String inputfile = new File(inputfilepath).getName();
-	// return inputfile + " imported & " + inputfile + ".pgex created in"
-	// + resultdir;
-	// }
 
 	/**
 	 * Create a Visualization XML file for DataNodes Contains color gradients
@@ -665,12 +645,14 @@ public class PathVisio {
 	 *            Colors for the color gradients the colors for the same
 	 *            gradient should be separated by "," and colors for the next
 	 *            gradient should be given after a ";"
+	 *            Colors can be string names or hex codes
 	 * @param gvalues
 	 *            Values corresponding to the colors of the color gradient the
 	 *            values for the same gradient should be separated by "," and
 	 *            values for the next gradient should be given after a ";"
 	 * @param rcolors
 	 *            Colors for the color rules colors should be separated by a ";"
+	 *            Colors can be string names or hex codes
 	 * @param rexpressions
 	 *            Expressions for the color rules expressions should be
 	 *            separated with ";"
@@ -688,68 +670,15 @@ public class PathVisio {
 	 */
 	public String createVisualization(String gexfilepath, String gsample,
 			String gcolors, String gvalues, String rexpressions, String rcolors)
-					throws SecurityException,
-					IllegalArgumentException, IDMapperException, ConverterException,
-					IOException, NoSuchFieldException, ClassNotFoundException,
+					throws SecurityException, IllegalArgumentException,
+					IDMapperException, ConverterException, IOException,
+					NoSuchFieldException, ClassNotFoundException,
 					IllegalAccessException, DataException {
 		VizMaker visxml = new VizMaker();
 		visxml.createVisualizationNode(gexfilepath, gsample, gcolors, gvalues,
 				rexpressions, rcolors);
 		return gexfilepath + ".xml-visualization file created!";
 	}
-
-	/**
-	 * Create a Visualization XML file for DataNodes Contains color gradients
-	 * and rules
-	 * 
-	 * @param gexfilepath
-	 *            Absolute path of the PGEX file
-	 * @param gsample
-	 *            Samples on which the color gradients should be applied samples
-	 *            should be separated by ";"
-	 * @param gcolors
-	 *            Colors for the color gradients the colors for the same
-	 *            gradient should be separated by "," and colors for the next
-	 *            gradient should be given after a ";" Colors should be in
-	 *            hexadecimal format
-	 * @param gvalues
-	 *            Values corresponding to the colors of the color gradient the
-	 *            values for the same gradient should be separated by "," and
-	 *            values for the next gradient should be given after a ";"
-	 * @param rsample
-	 *            Samples on which the color rules should be applied samples
-	 *            should be separated with ";"
-	 * @param rcolors
-	 *            Colors for the color rules colors should be separated by a ";"
-	 *            Colors should be in hexadecimal format
-	 * @param rexpressions
-	 *            Expressions for the color rules expressions should be
-	 *            separated with ";"
-	 * @return An XML file containing the visualization is saved in the same
-	 *         directory as the PGEX file
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws IDMapperException
-	 * @throws ConverterException
-	 * @throws IOException
-	 * @throws NoSuchFieldException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws DataException
-	 */
-	// public String createVisualizationByHex(String gexfilepath, String
-	// gsample,
-	// String gcolors, String gvalues, String rsample, String rcolors,
-	// String rexpressions) throws SecurityException,
-	// IllegalArgumentException, IDMapperException, ConverterException,
-	// IOException, NoSuchFieldException, ClassNotFoundException,
-	// IllegalAccessException, DataException {
-	// VizMaker visxml = new VizMaker();
-	// visxml.createVisualizationNodeByHex(gexfilepath, gsample, gcolors,
-	// gvalues,
-	// rsample, rcolors, rexpressions);
-	// return gexfilepath + ".xml-visualization file created!";
-	// }
 
 	/**
 	 * Data is visualized on the pathway GPML file saved on disk and the results
@@ -776,24 +705,16 @@ public class PathVisio {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathway(pathwayfilepath);
 		String resultDir = resultdirectory;
-		if (resultdirectory.length() == 0) {
-			resultDir = path.createResultDir();
-		} else {
-			if (!(new File(resultdirectory).exists())) {
-				resultDir = path.createResultDir();
-			}
-		}
-		File output = new File(resultDir + PathwayGpml.separator
+		resultdirectory = path.checkResultDir(resultdirectory);
+		File output = new File(resultdirectory + PathwayGpml.separator
 				+ pathway.getMappInfo().getMapInfoName());
 		output.mkdirs();
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + this.error;
 		}
-		StatExport vis = new StatExport();
 		try {
 			vis.visualizeData(gexfilepath, dbdirectory, pathway, output);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -824,13 +745,7 @@ public class PathVisio {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
 		String resultDir = resultdirectory;
-		if (resultdirectory.length() == 0) {
-			resultDir = path.createResultDir();
-		} else {
-			if (!(new File(resultdirectory).exists())) {
-				resultDir = path.createResultDir();
-			}
-		}
+		resultdirectory = path.checkResultDir(resultdirectory);
 		File output = new File(resultdirectory + PathwayGpml.separator
 				+ pathway.getMappInfo().getMapInfoName());
 		output.mkdirs();
@@ -838,7 +753,6 @@ public class PathVisio {
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + error;
 		}
-		StatExport vis = new StatExport();
 		try {
 			vis.visualizeData(gexfilepath, dbdirectory, pathway, output);
 		} catch (Exception e) {
@@ -972,7 +886,7 @@ public class PathVisio {
 			IDMapperException {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathway(pathwayfilepath);
-		String resultDir = path.createPathwayHtml(pathway, dbdirectory,
+		String resultDir = dat.createPathwayHtml(pathway, dbdirectory,
 				resultdirectory);
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + this.error;
@@ -1002,7 +916,7 @@ public class PathVisio {
 			IDMapperException {
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
-		String resultDir = path.createPathwayHtml(pathway, dbdirectory,
+		String resultDir = dat.createPathwayHtml(pathway, dbdirectory,
 				resultdirectory);
 		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
 			resultDir = resultDir + this.error;
@@ -1032,13 +946,11 @@ public class PathVisio {
 	 *            saved
 	 * @return String stating that results have been exported
 	 */
-	public String calculatePathwayStatistics(String pathwaydirectory,
-			String gexfilepath, String dbdirectory, String criteria,
+	public String calculatePathwayStatistics(String gexfilepath,
+			String dbdirectory, String pathwaydirectory, String criteria,
 			String resultdirectory) {
-		StatExport stat = new StatExport();
 		String resultDir = "";
 		try {
-			dat.removeLoadedGdbs();
 			resultDir = stat.calculatePathwayStatistics(gexfilepath,
 					dbdirectory, pathwaydirectory, criteria, resultdirectory);
 		} catch (Exception e) {
@@ -1075,9 +987,10 @@ public class PathVisio {
 		StatExport stat = new StatExport();
 		String resultDir = "";
 		try {
-			dat.removeLoadedGdbs();
-			resultDir = stat.getPathwayStatList(gexfilepath,
-					dbdirectory, pathwaydirectory, criteria, resultdirectory);
+			StatisticsResult result = stat.getPathwayStatList(gexfilepath,
+					dbdirectory,
+					pathwaydirectory, criteria, resultdirectory);
+			resultDir = stat.createStatFile(result, resultdirectory);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1088,41 +1001,5 @@ public class PathVisio {
 
 		return "Pathway Statistics List exported to " + resultDir;
 	}
-
-	/**
-	 * Calculate Pathway statistics - overrepresentation analysis
-	 * 
-	 * @param pathwaydirectory
-	 *            Absolute path of the directory which contains the pathways
-	 * @param gexfilepath
-	 *            Absolute path of the PGEX file
-	 * @param dbfilepath
-	 *            Absolute path of the bridge file
-	 * @param criteria
-	 *            The criteria based on which the Zscore should be calculated
-	 * @param resultdirectory
-	 *            Absolute path of the directory where the results should be
-	 *            saved
-	 * @return String stating that results have been exported
-	 */
-	// public String calculatePathwayStatisticsByBridge(String pathwaydirectory,
-	// String gexfilepath, String dbfilepath, String criteria,
-	// String resultdirectory) {
-	// // StatExport stat = new StatExport();
-	// String resultDir = "";
-	// try {
-	// path.removeLoadedGdbs();
-	// resultDir = stat.calculatePathwayStatisticsByBridge(gexfilepath,
-	// dbfilepath, pathwaydirectory, criteria, resultdirectory);
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
-	// resultDir = resultDir + this.error;
-	// }
-	//
-	// return "Results exported to " + resultDir;
-	// }
 
 }

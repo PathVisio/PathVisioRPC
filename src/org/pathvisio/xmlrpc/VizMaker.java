@@ -23,12 +23,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bridgedb.IDMapperException;
+import org.bridgedb.bio.BioDataSource;
+import org.bridgedb.rdb.construct.DataDerby;
 import org.pathvisio.core.Engine;
+import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.preferences.GlobalPreference;
 import org.pathvisio.core.preferences.PreferenceManager;
 import org.pathvisio.data.DataException;
 import org.pathvisio.data.ISample;
+import org.pathvisio.desktop.PvDesktop;
 import org.pathvisio.desktop.gex.GexManager;
+import org.pathvisio.desktop.gex.SimpleGex;
 import org.pathvisio.desktop.visualization.ColorGradient;
 import org.pathvisio.desktop.visualization.ColorGradient.ColorValuePair;
 import org.pathvisio.desktop.visualization.ColorRule;
@@ -36,8 +41,13 @@ import org.pathvisio.desktop.visualization.ColorSet;
 import org.pathvisio.desktop.visualization.ColorSetManager;
 import org.pathvisio.desktop.visualization.Visualization;
 import org.pathvisio.desktop.visualization.VisualizationManager;
+import org.pathvisio.gexplugin.GexPlugin;
+import org.pathvisio.gui.SwingEngine;
+import org.pathvisio.htmlexport.plugin.HtmlExporter;
+import org.pathvisio.statistics.StatisticsPlugin;
 import org.pathvisio.visualization.plugins.ColorByExpression;
 import org.pathvisio.visualization.plugins.DataNodeLabel;
+import org.pathvisio.visualization.plugins.VisualizationPlugin;
 
 /**
  * Creates and saves visualizations, i.e Color Rules and Color Gradients for
@@ -48,6 +58,8 @@ import org.pathvisio.visualization.plugins.DataNodeLabel;
  * 
  */
 public class VizMaker {
+
+	DataImport dat = new DataImport();
 
 
 	protected void setDefaultColors(String noCritMet, String noDatFound)
@@ -67,9 +79,8 @@ public class VizMaker {
 	protected String createVisualizationNode(String gexFile, String gsample,
 			String gcolors, String gvalues, String rexpressions, String rcolors)
 					throws IDMapperException, IOException, SecurityException,
-					NoSuchFieldException,
-					ClassNotFoundException, IllegalArgumentException,
-					IllegalAccessException, DataException {
+					NoSuchFieldException, ClassNotFoundException,
+					IllegalArgumentException, IllegalAccessException, DataException {
 		PreferenceManager.init();
 
 		// Create engine to load pathway
@@ -182,6 +193,51 @@ public class VizMaker {
 		visman.saveXML();
 
 		return "Visualization created!";
+	}
+
+	protected void visualizeData(String gexname, String dbDir, Pathway pathway,
+			File output) throws Exception {
+
+		File gexfile = new File(gexname);
+
+		String visName = "Visualization";
+		PreferenceManager.init();
+		BioDataSource.init();
+
+		dat.idmapperLoader(dbDir);
+
+		Engine engine = new Engine();
+		PvDesktop pvDesktop = new PvDesktop(new SwingEngine(engine), null);
+
+		// start the main plugins visualization, gex and statistics
+		VisualizationPlugin visplugin = new VisualizationPlugin();
+		visplugin.init(pvDesktop);
+
+		GexPlugin gexplugin = new GexPlugin();
+		gexplugin.init(pvDesktop);
+
+		StatisticsPlugin statplugin = new StatisticsPlugin();
+		statplugin.init(pvDesktop);
+
+		SimpleGex gex = new SimpleGex("" + gexfile, false, new DataDerby());
+
+		pvDesktop.getGexManager().setCurrentGex(gex);
+		GexManager gexMgr = pvDesktop.getGexManager();
+		VisualizationManager visMgr = pvDesktop.getVisualizationManager();
+
+		for (Visualization v : pvDesktop.getVisualizationManager()
+				.getVisualizations()) {
+			if (v.getName().equals(visName)) {
+				pvDesktop.getVisualizationManager().setActiveVisualization(v);
+			}
+		}
+
+		gexMgr.getCachedData().setMapper(dat.getLoadedGdbs());
+
+		HtmlExporter exporter = new HtmlExporter(dat.getLoadedGdbs(),
+				visMgr, gexMgr);
+		exporter.doExport(pathway, pathway.getMappInfo().getMapInfoName(),
+				output);
 	}
 
 	protected Color getColors(String codeName) {
