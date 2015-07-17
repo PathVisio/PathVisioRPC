@@ -792,6 +792,38 @@ public class PathVisio {
 		return pathway.getMappInfo().getMapInfoName() + "." + exportfiletype
 				+ " file created in " + resultDir;
 	}
+	
+	/**
+	 * Exports the image of a pathway GPML saved on disk and saves it in
+	 * the result directory
+	 * 
+	 * @param pathwayfilepath
+	 *            Absolute path of the pathway GPML file
+	 * @param exportfiletype
+	 *            The image format to export the pathway in. Possible formats
+	 *            "png", "svg", "tiff" or "pdf".
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the image should be saved
+	 * @param exportfilename
+	 *            The name of the export file
+	 * @return Pathway image created in the result directory
+	 * @throws ConverterException
+	 * @throws IOException
+	 * @throws IDMapperException
+	 */
+	public String exportPathwayByFile(String pathwayfilepath, String exportfiletype,
+			String resultdirectory, String exportfilename) throws ConverterException, IOException,
+			IDMapperException {
+		PathwayGpml path = new PathwayGpml();
+		Pathway pathway = path.openPathway(pathwayfilepath);
+		String resultDir = path.exportPathwayByFile(pathway, exportfiletype,
+				resultdirectory, exportfilename);
+		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+			resultDir = resultDir + this.error;
+		}
+		return exportfilename + "." + exportfiletype
+				+ " file created in " + resultDir;
+	}
 
 	/**
 	 * Exports a pathway image of a Wikipathways pathway, provided it's
@@ -812,7 +844,6 @@ public class PathVisio {
 	public String exportPathwayFromURI(String uri, String exportfiletype,
 			String resultdirectory) throws ConverterException, IOException,
 			IDMapperException {
-		PreferenceManager.init();
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = path.openPathwayByURI(uri);
 		String resultDir = path.exportPathway(pathway, exportfiletype,
@@ -822,6 +853,39 @@ public class PathVisio {
 			resultDir = resultDir + error;
 		}
 		return pathway.getMappInfo().getMapInfoName() + "." + exportfiletype
+				+ " file created in " + resultDir;
+	}
+
+	/**
+	 * Exports a pathway image of a Wikipathways pathway, provided it's
+	 * WikiPathways ID in png, svg or pdf formats
+	 * 
+	 * @param uri
+	 *            Wikipathways ID of the pathway
+	 * @param exportfiletype
+	 *             The image format to export the pathway in. Possible formats
+	 *            "png", "svg", "tiff" or "pdf".
+	 * @param resultdirectory
+	 *            Absolute path of the directory where the image should be saved
+	 * @param exportfiletype
+	 * 				Name of the export file
+	 * @return Pathway image created in result directory
+	 * @throws ConverterException
+	 * @throws IOException
+	 * @throws IDMapperException
+	 */
+	public String exportPathwayFromURIByFile(String uri, String exportfiletype,
+			String resultdirectory, String exportfilename) throws ConverterException, IOException,
+			IDMapperException {
+		PathwayGpml path = new PathwayGpml();
+		Pathway pathway = path.openPathwayByURI(uri);
+		String resultDir = path.exportPathwayByFile(pathway, exportfiletype,
+				resultdirectory, exportfilename);
+		String error = "";
+		if (!(resultDir.equalsIgnoreCase(resultdirectory))) {
+			resultDir = resultDir + error;
+		}
+		return exportfilename + "." + exportfiletype
 				+ " file created in " + resultDir;
 	}
 

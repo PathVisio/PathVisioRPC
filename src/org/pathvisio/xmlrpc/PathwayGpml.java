@@ -213,6 +213,19 @@ public class PathwayGpml {
 		return resultdir;
 	}
 
+	protected String exportPathwayByFile(Pathway pathway, String filetype,
+			String resultdir, String exportfilename) {
+		PreferenceManager.init();
+
+		resultdir = checkResultDir(resultdir);
+		String pathwayname = exportfilename;
+		File pathwayfile = new File(resultdir + separator + pathwayname + "."
+				+ filetype);
+		createPathwayImage(pathway, filetype, pathwayfile);
+		return resultdir;
+	}
+
+	
 	protected byte[] exportPathwayByte(Pathway pathway, String filetype) {
 		PreferenceManager.init();
 		File pathwayfile = new File(pathway.getMappInfo().getMapInfoName()
