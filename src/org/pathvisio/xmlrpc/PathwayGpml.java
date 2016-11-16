@@ -381,6 +381,55 @@ public class PathwayGpml {
 		return identifier;
 	}
 
+	protected String addDataNode(Pathway pathway, String datanodename,
+								 String datanodetype, String id, String source, String resultdir, String x, String y) {
+
+		// create new Datanode
+		datanode = PathwayElement.createPathwayElement(ObjectType.DATANODE);
+		datanode.setDataNodeType(datanodetype);
+		datanode.setGraphId(pathway.getUniqueGraphId());
+
+		// Graphics
+		if (datanodetype.equalsIgnoreCase("metabolite")) {
+			datanode.setColor(Color.BLUE);
+		}
+		if (datanodetype.equalsIgnoreCase("pathway")) {
+			datanode.setColor(new Color(20, 150, 30));
+			datanode.setMFontSize(12);
+			datanode.setBold(true);
+			datanode.setShapeType(ShapeType.NONE);
+		}
+		pwyele.setMCenterX(x);
+		pwyele.setMCenterY(y);
+
+		datanode.setTextLabel(datanodename);
+		datanode.setMWidth(datanodename.length() + 110);
+		datanode.setMCenterX(x);
+		datanode.setMCenterY{y);
+		datanode.setMHeight(20);
+
+		/*
+		 * Not suitable if datanodename is long
+		 */
+		// datanode.setInitialSize();
+
+		// add datanode to pathway
+		pathway.add(datanode);
+
+		// save Pathway
+		savePathway(pathway, resultdir);
+
+		// annotate Datanode
+		if (id.length() > 0 && source.length() > 0) {
+			annotateElement(pathway, datanodename, id, source, resultdir);
+		}
+
+		String identifier = datanode.getGraphId();
+
+		return identifier;
+	}
+
+
 	protected String addLineByID(Pathway pathway, String linename,
 			String node1, String node2, String starttype, String endtype,
 			String resultdir) {
