@@ -262,10 +262,8 @@ public class PathVisio {
 	 *            DataSource for the DataNode
 	 * @return A Unique GraphID of the DataNode
 	 */
-
 	public String addDataNodeXY(String pathwayfilepath, String datanodename,
 							  String datanodetype, String datanodeid, String datanodesource, String centerx , String centery) {
-
 		PathwayGpml path = new PathwayGpml();
 		Pathway pathway = new Pathway();
 		pathway = path.openPathway(pathwayfilepath);
