@@ -252,6 +252,30 @@ public class PathVisio {
 		+ pathwayname;
 	}
 
+	/** Name of the DataNode
+	 * @param datanodetype
+	 *            Biological Type of the DataNode, "GeneProduct", "Metabolite",
+			*            "Protein", "RNA", "Pathway" or "Unknown"
+			* @param datanodeid
+	 *            Identifier for the DataNode
+	 * @param datanodesource
+	 *            DataSource for the DataNode
+	 * @return A Unique GraphID of the DataNode
+	 */
+
+	public String addDataNodeXY(String pathwayfilepath, String datanodename,
+							  String datanodetype, String datanodeid, String datanodesource, String centerx , String centery) {
+
+		PathwayGpml path = new PathwayGpml();
+		Pathway pathway = new Pathway();
+		pathway = path.openPathway(pathwayfilepath);
+		String resultdirectory = new File(pathwayfilepath).getParent();
+		String identifier = path.addDataNodeXY(pathway, datanodename,
+				datanodetype, datanodeid, datanodesource, resultdirectory, centerx, centery);
+		String pathwayname = new File(pathwayfilepath).getName();
+		return datanodename + "; ID : " + identifier + " added to "
+				+ pathwayname;
+	}
 	/**
 	 * Adds a DataNode to a Pathway GPML file downloaded by it's Wikipathwas ID
 	 * and saves it in the result directory
@@ -271,6 +295,7 @@ public class PathVisio {
 	 * @param comment
 	 * @return A Unique GraphID of the DataNode added
 	 */
+
 	public String addDataNodeByURI(String uri, String datanodename,
 			String datanodetype, String datanodeid, String datanodesource,
 			String resultdirectory, String reference, String comment) {
