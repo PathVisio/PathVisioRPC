@@ -381,7 +381,7 @@ public class PathwayGpml {
 		return identifier;
 	}
 
-	protected String addDataNode(Pathway pathway, String datanodename,
+	protected String addDataNodeXY(Pathway pathway, String datanodename,
 								 String datanodetype, String id, String source, String resultdir, String x, String y) {
 
 		// create new Datanode
