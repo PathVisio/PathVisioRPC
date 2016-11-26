@@ -399,13 +399,15 @@ public class PathwayGpml {
 			datanode.setBold(true);
 			datanode.setShapeType(ShapeType.NONE);
 		}
-		pwyele.setMCenterX(x);
-		pwyele.setMCenterY(y);
 
 		datanode.setTextLabel(datanodename);
 		datanode.setMWidth(datanodename.length() + 110);
-		datanode.setMCenterX(x);
-		datanode.setMCenterY{y);
+		try { datanode.setMCenterX(Integer.valueOf(x)); } catch (Exception e) {
+		  throw new IllegalArgumentException("Bad x coordinate: " + x, e);
+		}
+		try { datanode.setMCenterY(Integer.valueOf(y)); } catch (Exception e) {
+		  throw new IllegalArgumentException("Bad y coordinate: " + y, e);
+		}
 		datanode.setMHeight(20);
 
 		/*
