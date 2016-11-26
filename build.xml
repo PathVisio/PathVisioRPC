@@ -99,7 +99,7 @@
             <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.events_3.0.0.draft20060413_v201105210656.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.smil_1.0.1.v200903091627.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.w3c.dom.svg_1.1.0.v201011041433.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.junit_4.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/lib/org.junit_4.10.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/com.springsource.org.apache.commons.logging-1.1.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${common.bundles}/org.apache.commons.io.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="${pathvisio.dir}/lib/org.eclipse.osgi.jar"/>
